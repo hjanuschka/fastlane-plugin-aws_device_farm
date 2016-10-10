@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-aws_device_farm'
   spec.version       = Fastlane::AwsDeviceFarm::VERSION
   spec.author        = %q{Helmut Januschka}
-  spec.email         = %q{h.januschka@krone.at}
+  spec.email         = %q{helmut@januschka.com}
 
   spec.summary       = %q{Run UI Tests on AWS Devicefarm}
   spec.homepage      = "https://github.com/hjanuschka/fastlane-plugin-aws_device_farm"
