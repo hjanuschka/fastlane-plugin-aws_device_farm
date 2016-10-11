@@ -150,8 +150,6 @@ module Fastlane
         platform == :ios || platform == :android
       end
 
-      private
-
       POLLING_INTERVAL = 10
 
       def self.fetch_project(name)

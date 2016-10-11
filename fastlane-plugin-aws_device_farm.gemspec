@@ -6,6 +6,7 @@ require 'fastlane/plugin/aws_device_farm/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-aws_device_farm'
   spec.version       = Fastlane::AwsDeviceFarm::VERSION
+  spec.version = "#{spec.version}-alpha-#{ENV['TRAVIS_BUILD_NUMBER']}" if ENV['TRAVIS']
   spec.author        = %q{Helmut Januschka}
   spec.email         = %q{helmut@januschka.com}
 
