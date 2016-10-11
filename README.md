@@ -1,39 +1,47 @@
-# aws_device_farm plugin
+# AWS Device Farm Plugin for Fastlane
 
-[![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-aws_device_farm)
+[![fastlane Plugin Badge](https://rawcdn.githack.com/fastlane/fastlane/master/fastlane/assets/plugin-badge.svg)](https://rubygems.org/gems/fastlane-plugin-sharethemeal)
 
-## Getting Started
 
-This project is a [fastlane](https://github.com/fastlane/fastlane) plugin. To get started with `fastlane-plugin-aws_device_farm`, add it to your project by running:
+## About
+> This Plugin Allows XCUITests and android Instrumentation tests run on AWS device Farm
 
-```bash
+
+
+
+
+## Setup
+### Add Plugin
+```
 fastlane add_plugin aws_device_farm
 ```
 
-## About aws_device_farm
+### Get your UserHash
+In Order to automate donation you require to store your payment method (preffered PayPal)
+So do a single donation, on iOS this opens a Safari instance, look at the url and extract your `userHash`
 
-Run UI Tests on AWS Devicefarm
+Download The App to your Mobile.
 
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
+| Platform | Link |
+|----------|:-------------:|
+| IOS |  [AppStore](https://click.google-analytics.com/redirect?tid=UA-58737077-1&url=https%3A%2F%2Fitunes.apple.com%2Fus%2Fapp%2Fsharethemeal%2Fid977130010&aid=org.sharethemeal.app&idfa=%{idfa}&cs=stmwebsite&cm=website&cn=permanent) |
+| ANDROID |    [PlayStore](https://play.google.com/store/apps/details?id=org.sharethemeal.app&referrer=utm_source%3Dstmwebsite%26utm_medium%3Dwebsite%26utm_campaign%3Dpermanent)    |
+
+**Donate Once**, in the Safari instance that opens - you'll find your `userHash` - this is required to automate the donation.
 
 ## Example
 
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`. 
-
-**Note to author:** Please set up a sample project to make it easy for users to explore what your plugin does. Provide everything that is necessary to try out the plugin in this project (including a sample Xcode/Android project if necessary)
-
-## Run tests for this plugin
-
-To run both the tests, and code style validation, run
-
+```ruby
+lane :donate do
+  sharethemeal(
+    amount: "0.4",
+    userhash: "XXX",
+    currency: "EUR",
+    team_id: "fastlane"
+  )
+end
 ```
-rake
-```
 
-To automatically fix many of the styling issues, use 
-```
-rubocop -a
-```
 
 ## Issues and Feedback
 
