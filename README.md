@@ -7,7 +7,7 @@
 > This Plugin Allows XCUITests and android Instrumentation tests run on AWS device Farm
 
 
-| IOS | Android | Fail |
+| iOS | Android | Fail |
 |----------|-------------|-------------|
 | ![Screenshot](assets/screen_done.png) |  ![Screenshot](assets/screen_don_android.png)| ![Screenshot](assets/fail.png) |
 
@@ -107,7 +107,7 @@ gradle(task: 'assembleAndroidTest')
 ## Credit
 it is based on a custom action by @icapps (https://github.com/icapps/fastlane-configuration)
 added the following:
-  * IOS Support for XCUITests
+  * iOS Support for XCUITests
   * support current `fastlane` version
   * improve output
   * make it available as a `fastlane` plugin
