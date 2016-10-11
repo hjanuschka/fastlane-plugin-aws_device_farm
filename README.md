@@ -9,8 +9,6 @@
 ![Screenshot](assets/screen_done.png)
 
 
-
-
 ## Setup
 ### Add Plugin
 ```
@@ -42,23 +40,11 @@ lane :aws_device_run do
   )
 end
 ```
-## Example Android
 
-```ruby
-lane :aws_device_run do
-  ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
-  ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
-  ENV['AWS_REGION']            = 'us-west-2'
 
-  aws_device_farm(
-    name:                'fastlane',
-    binary_path:         'app.apk',
-    test_binary_path:    'tests.apk',
-    device_pool:         'ANDROID',
-    wait_for_completion: true
-  )
-end
-```
+## Android
+
+you have to provide the app.apk and instrumentaion apk file as `binary_path` and `test_binary_path`
 
 
 
@@ -90,7 +76,13 @@ Dir['../aws/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app
 end
 ```
 
-
+## Credit
+it is based on a custom action by @icapps (https://github.com/icapps/fastlane-configuration)
+added the following:
+  * IOS Support for XCUITests
+  * support current `fastlane` version
+  * improve output
+  
 ## Issues and Feedback
 
 For any other issues and feedback about this plugin, please submit it to this repository.
