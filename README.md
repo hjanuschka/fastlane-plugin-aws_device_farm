@@ -78,7 +78,7 @@ xcodebuild(
   destination: 'generic/platform=iOS',
   configuration: 'Development',
   derivedDataPath: 'aws',
-  xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO build-for-testing"
+  xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO build-for-testing"
 )
 FileUtils.rm_rf '../aws/packages'
 Dir['../aws/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app'].each do |app|
