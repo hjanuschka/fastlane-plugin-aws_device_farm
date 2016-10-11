@@ -28,7 +28,7 @@ Select the devices you want to run the tests on.
 ### Create a project on AWS
 in this example we called this `fastlane`
 
-## Example IOS
+## Example iOS
 
 ```ruby
 lane :aws_device_run_ios do
@@ -40,7 +40,7 @@ lane :aws_device_run_ios do
     name:                'fastlane',
     binary_path:         'aws/packages/app.ipa',
     test_binary_path:    'aws/packages/runner.ipa',
-    device_pool:         'IOS',
+    device_pool:         'iOS',
     wait_for_completion: true
   )
 end
@@ -59,14 +59,14 @@ lane :aws_device_run_android do
     name:                'fastlane',
     binary_path:         'app/build/outputs/apk/app-debug.apk',
     test_binary_path:    'app/build/outputs/apk/app-debug-androidTest-unaligned.apk',
-    device_pool:         'ANDROID',
+    device_pool:         'Android',
     wait_for_completion: true
   )
 end
 ```
 
 
-## IOS Build IPA's
+## iOS Build IPA's
 You could use something like this.
 after this you have `aws/packages/app.ipa` and `aws/packages/runner.ipa`
 
@@ -95,7 +95,7 @@ end
 ```
 
 
-## ANDROID Build APK's
+## Android Build APK's
 you could use something like this.
 after this you have the app-apk in `app/build/outputs/apk/app-debug.apk` and the testrunner in `app/build/outputs/apk/app-debug-androidTest-unaligned.apk`
 
@@ -112,17 +112,11 @@ added the following:
   * improve output
   * make it available as a `fastlane` plugin
   
-## Issues and Feedback
-
-For any other issues and feedback about this plugin, please submit it to this repository.
 
 ## Troubleshooting
 
 If you have trouble using plugins, check out the [Plugins Troubleshooting](https://github.com/fastlane/fastlane/blob/master/fastlane/docs/PluginsTroubleshooting.md) doc in the main `fastlane` repo.
 
-## Using `fastlane` Plugins
-
-For more information about how the `fastlane` plugin system works, check out the [Plugins documentation](https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Plugins.md).
 
 ## About `fastlane`
 
