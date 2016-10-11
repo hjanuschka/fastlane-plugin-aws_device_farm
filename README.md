@@ -6,7 +6,12 @@
 ## About
 > This Plugin Allows XCUITests and android Instrumentation tests run on AWS device Farm
 
-![Screenshot](assets/screen_done.png)
+
+| IOS | Android | Fail |
+|----------|-------------|-------------|
+| ![Screenshot](assets/screen_done.png) |  ![Screenshot](assets/screen_don_android.png)| ![Screenshot](assets/fail.png) |
+
+
 
 
 ## Setup
@@ -20,13 +25,13 @@ Open your AWS dashboard and under `AWS-Device Farm` - configure your Device Pool
 Select the devices you want to run the tests on.
 
 
-### Create a project
+### Create a project on AWS
 in this example we called this `fastlane`
 
 ## Example IOS
 
 ```ruby
-lane :aws_device_run do
+lane :aws_device_run_ios do
   ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
   ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
   ENV['AWS_REGION']            = 'us-west-2'
@@ -42,13 +47,26 @@ end
 ```
 
 
-## Android
+## Example Android
 
-you have to provide the app.apk and instrumentaion apk file as `binary_path` and `test_binary_path`
+```ruby
+lane :aws_device_run_android do
+  ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
+  ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
+  ENV['AWS_REGION']            = 'us-west-2'
+
+  aws_device_farm(
+    name:                'fastlane',
+    binary_path:         'app/build/outputs/apk/app-debug.apk',
+    test_binary_path:    'app/build/outputs/apk/app-debug-androidTest-unaligned.apk',
+    device_pool:         'ANDROID',
+    wait_for_completion: true
+  )
+end
+```
 
 
-
-## To get the IPA's (app and uitest runner)
+## IOS Build IPA's
 You could use something like this.
 after this you have `aws/packages/app.ipa` and `aws/packages/runner.ipa`
 
@@ -74,6 +92,16 @@ Dir['../aws/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app
     `cd ../aws/packages/app/; zip -r ../app.ipa .; cd -`
   end
 end
+```
+
+
+## ANDROID Build APK's
+you could use something like this.
+after this you have the app-apk in `app/build/outputs/apk/app-debug.apk` and the testrunner in `app/build/outputs/apk/app-debug-androidTest-unaligned.apk`
+
+```ruby
+gradle(task: 'assembleDebug')
+gradle(task: 'assembleAndroidTest')
 ```
 
 ## Credit
