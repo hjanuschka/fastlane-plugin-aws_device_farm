@@ -110,6 +110,7 @@ added the following:
   * IOS Support for XCUITests
   * support current `fastlane` version
   * improve output
+  * make it available as a `fastlane` plugin
   
 ## Issues and Feedback
 
