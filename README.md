@@ -6,6 +6,7 @@
 ## About
 > This Plugin Allows XCUITests and android Instrumentation tests run on AWS device Farm
 
+![Screenshot](assets/screen_done.png)
 
 
 
@@ -16,29 +17,76 @@
 fastlane add_plugin aws_device_farm
 ```
 
-### Get your UserHash
-In Order to automate donation you require to store your payment method (preffered PayPal)
-So do a single donation, on iOS this opens a Safari instance, look at the url and extract your `userHash`
+### Create Device Pools
+Open your AWS dashboard and under `AWS-Device Farm` - configure your Device Pools.
+Select the devices you want to run the tests on.
 
-Download The App to your Mobile.
 
-| Platform | Link |
-|----------|:-------------:|
-| IOS |  [AppStore](https://click.google-analytics.com/redirect?tid=UA-58737077-1&url=https%3A%2F%2Fitunes.apple.com%2Fus%2Fapp%2Fsharethemeal%2Fid977130010&aid=org.sharethemeal.app&idfa=%{idfa}&cs=stmwebsite&cm=website&cn=permanent) |
-| ANDROID |    [PlayStore](https://play.google.com/store/apps/details?id=org.sharethemeal.app&referrer=utm_source%3Dstmwebsite%26utm_medium%3Dwebsite%26utm_campaign%3Dpermanent)    |
+### Create a project
+in this example we called this `fastlane`
 
-**Donate Once**, in the Safari instance that opens - you'll find your `userHash` - this is required to automate the donation.
-
-## Example
+## Example IOS
 
 ```ruby
-lane :donate do
-  sharethemeal(
-    amount: "0.4",
-    userhash: "XXX",
-    currency: "EUR",
-    team_id: "fastlane"
+lane :aws_device_run do
+  ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
+  ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
+  ENV['AWS_REGION']            = 'us-west-2'
+
+  aws_device_farm(
+    name:                'fastlane',
+    binary_path:         'aws/packages/app.ipa',
+    test_binary_path:    'aws/packages/runner.ipa',
+    device_pool:         'IOS',
+    wait_for_completion: true
   )
+end
+```
+## Example Android
+
+```ruby
+lane :aws_device_run do
+  ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
+  ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
+  ENV['AWS_REGION']            = 'us-west-2'
+
+  aws_device_farm(
+    name:                'fastlane',
+    binary_path:         'app.apk',
+    test_binary_path:    'tests.apk',
+    device_pool:         'ANDROID',
+    wait_for_completion: true
+  )
+end
+```
+
+
+
+## To get the IPA's (app and uitest runner)
+You could use something like this.
+after this you have `aws/packages/app.ipa` and `aws/packages/runner.ipa`
+
+```ruby
+xcodebuild(
+  clean: true,
+  workspace: 'FiveXFive.xcworkspace',
+  scheme: 'UITests',
+  destination: 'generic/platform=iOS',
+  configuration: 'Development',
+  derivedDataPath: 'aws',
+  xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO build-for-testing"
+)
+FileUtils.rm_rf '../aws/packages'
+Dir['../aws/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app'].each do |app|
+  if app.include? 'Runner'
+    FileUtils.mkdir_p '../aws/packages/runner/Payload'
+    FileUtils.cp_r app, '../aws/packages/runner/Payload'
+    `cd ../aws/packages/runner/; zip -r ../runner.ipa .; cd -`
+  else
+    FileUtils.mkdir_p '../aws/packages/app/Payload'
+    FileUtils.cp_r app, '../aws/packages/app/Payload'
+    `cd ../aws/packages/app/; zip -r ../app.ipa .; cd -`
+  end
 end
 ```
 
