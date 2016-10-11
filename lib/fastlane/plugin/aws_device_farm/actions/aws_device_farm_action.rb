@@ -1,5 +1,4 @@
 require 'aws-sdk'
-
 module Fastlane
   module Actions
     class AwsDeviceFarmAction < Action
@@ -8,7 +7,7 @@ module Fastlane
         UI.message 'Preparing the upload to the device farm.'
 
         # Instantiate the client.
-        @client = ::Aws::DeviceFarm::Client.new()
+        @client = ::Aws::DeviceFarm::Client.new
 
         # Fetch the project
         project = fetch_project params[:name]
@@ -34,7 +33,7 @@ module Fastlane
           if type == "ANDROID_APP"
             test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
           else
-            
+
             test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
           end
 
@@ -60,7 +59,7 @@ module Fastlane
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
           run = wait_for_run run
-          raise "#{run.message} 🙈" unless %w(PASSED WARNED).include? run.result
+          raise "#{run.message} Failed 🙈" unless %w(PASSED WARNED).include? run.result
 
           UI.message 'Successfully tested the application on the AWS device farm. ✅'.green
         else
@@ -204,9 +203,9 @@ module Fastlane
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
         if test_upload
-          test_hash[:type]             = 'XCTEST_UI'
+          test_hash[:type] = 'XCTEST_UI'
           if type == "ANDROID_APP"
-            test_hash[:type]             = 'INSTRUMENTATION'
+            test_hash[:type] = 'INSTRUMENTATION'
           end
           test_hash[:test_package_arn] = test_upload.arn
         end
@@ -231,10 +230,31 @@ module Fastlane
           run = fetch_run_status run
         end
         UI.message "The run ended with result #{run.result}."
+        UI.important "Minutes Counted: #{run.device_minutes.total}"
+
+        job = @client.list_jobs({
+                arn: run.arn
+            })
+
+        rows = []
+        job.jobs.each do |j|
+          if j.result == "PASSED"
+            status = "💚"
+          else
+            status = "💥"
+          end
+          rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
+        end
+        puts ""
+        puts Terminal::Table.new(
+          title: "Device Farm Summary".green,
+          headings: ["Status", "Name", "Form Factor", "Platform", "Version"],
+          rows: rows
+        )
+        puts ""
 
         run
       end
     end
   end
 end
-
