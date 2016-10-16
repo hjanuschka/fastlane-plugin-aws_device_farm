@@ -93,10 +93,6 @@ end
 |  Option |  Default  |  Description |  Type |
 |---|---|---|---|
 |  derrived_data_path |    |  Derrived Data Path, containing a `build-for-testing` derrived-data folder |  String |
-|  binary_path |    |  Path to App Binary |  String |
-|  test_binary_path |    |  Path to App Binary |  String |
-|  device_pool | IOS | AWS Device Farm Device Pool | String |
-|  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
 
 
 
