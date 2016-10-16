@@ -18,7 +18,7 @@ module Fastlane
         raise "Device pool '#{params[:device_pool]}' not found. 🙈" if device_pool.nil?
 
         # Create the upload.
-        path   = File.join Dir.pwd, params[:binary_path]
+        path   = File.expand_path(params[:binary_path])
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
         upload = create_project_upload project, path, type
 
@@ -29,7 +29,7 @@ module Fastlane
         # Upload the test package if needed.
         test_upload = nil
         if params[:test_binary_path]
-          test_path = File.join Dir.pwd, params[:test_binary_path]
+          test_path = File.expand_path(params[:test_binary_path])
           if type == "ANDROID_APP"
             test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
           else
@@ -86,6 +86,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_NAME',
             description: 'Define the name of the device farm project',
             is_string:   true,
+            default_value: 'fastlane',
             optional:    false
           ),
           FastlaneCore::ConfigItem.new(
@@ -95,8 +96,8 @@ module Fastlane
             is_string:   true,
             optional:    false,
             verify_block: proc do |value|
-              path = File.join Dir.pwd, value
-              raise "Application binary not found at path '#{path}'. 🙈".red unless File.exist?(path)
+              
+              raise "Application binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
           ),
           FastlaneCore::ConfigItem.new(
@@ -106,21 +107,26 @@ module Fastlane
             is_string:   true,
             optional:    true,
             verify_block: proc do |value|
-              path = File.join Dir.pwd, value
-              raise "Test binary not found at path '#{path}'. 🙈".red unless File.exist?(path)
+              
+              raise "Test binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
+            
           ),
           FastlaneCore::ConfigItem.new(
             key:         :path,
             env_name:    'FL_AWS_DEVICE_FARM_PATH',
             description: 'Define the path of the application binary (apk or ipa) to upload to the device farm project',
             is_string:   true,
-            optional:    false
+            optional:    false,
+            verify_block: proc do |value|
+              raise "Application binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
+            end
           ),
           FastlaneCore::ConfigItem.new(
             key:         :device_pool,
             env_name:    'FL_AWS_DEVICE_FARM_POOL',
             description: 'Define the device pool you want to use for running the applications',
+            default_value: 'IOS',
             is_string:   true,
             optional:    false
           ),

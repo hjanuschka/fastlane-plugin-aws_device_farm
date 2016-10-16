@@ -35,14 +35,20 @@ lane :aws_device_run_ios do
   ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
   ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
   ENV['AWS_REGION']            = 'us-west-2'
-
-  aws_device_farm(
-    name:                'fastlane',
-    binary_path:         'aws/packages/app.ipa',
-    test_binary_path:    'aws/packages/runner.ipa',
-    device_pool:         'iOS',
-    wait_for_completion: true
+  
+  #Build For Testing
+  xcodebuild(
+    scheme: 'UITests',
+    destination: 'generic/platform=iOS',
+    configuration: 'Development',
+    derivedDataPath: 'aws',
+    xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO build-for-testing"
   )
+  # Transform .app into AWS compatible IPA
+  aws_device_farm_package(
+    derrived_data_path: "aws"
+  )
+  aws_device_farm
 end
 ```
 
@@ -55,54 +61,43 @@ lane :aws_device_run_android do
   ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
   ENV['AWS_REGION']            = 'us-west-2'
 
+  #Build Debug App + Instrumentation Apk
+  gradle(task: 'assembleDebug')
+  gradle(task: 'assembleAndroidTest')
+
+  # RUN tests on AWS Device Farm
   aws_device_farm(
-    name:                'fastlane',
     binary_path:         'app/build/outputs/apk/app-debug.apk',
-    test_binary_path:    'app/build/outputs/apk/app-debug-androidTest-unaligned.apk',
-    device_pool:         'Android',
-    wait_for_completion: true
+    test_binary_path:    'app/build/outputs/apk/app-debug-androidTest-unaligned.apk'
   )
 end
 ```
 
+## Options
 
-## iOS Build IPA's
-You could use something like this.
-after this you have `aws/packages/app.ipa` and `aws/packages/runner.ipa`
-
-```ruby
-xcodebuild(
-  clean: true,
-  workspace: 'FiveXFive.xcworkspace',
-  scheme: 'UITests',
-  destination: 'generic/platform=iOS',
-  configuration: 'Development',
-  derivedDataPath: 'aws',
-  xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO build-for-testing"
-)
-FileUtils.rm_rf '../aws/packages'
-Dir['../aws/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app'].each do |app|
-  if app.include? 'Runner'
-    FileUtils.mkdir_p '../aws/packages/runner/Payload'
-    FileUtils.cp_r app, '../aws/packages/runner/Payload'
-    `cd ../aws/packages/runner/; zip -r ../runner.ipa .; cd -`
-  else
-    FileUtils.mkdir_p '../aws/packages/app/Payload'
-    FileUtils.cp_r app, '../aws/packages/app/Payload'
-    `cd ../aws/packages/app/; zip -r ../app.ipa .; cd -`
-  end
-end
-```
+ * **aws_device_farm**
+ 
+|  Option |  Default  |  Description |  Type |
+|---|---|---|---|
+|  name |  fastlane  |  AWS Device Farm Project Name |  String |
+|  binary_path |    |  Path to App Binary |  String |
+|  test_binary_path |    |  Path to App Binary |  String |
+|  device_pool | IOS | AWS Device Farm Device Pool | String |
+|  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
 
 
-## Android Build APK's
-you could use something like this.
-after this you have the app-apk in `app/build/outputs/apk/app-debug.apk` and the testrunner in `app/build/outputs/apk/app-debug-androidTest-unaligned.apk`
 
-```ruby
-gradle(task: 'assembleDebug')
-gradle(task: 'assembleAndroidTest')
-```
+* **aws_device_farm_package**
+
+|  Option |  Default  |  Description |  Type |
+|---|---|---|---|
+|  derrived_data_path |    |  Derrived Data Path, containing a `build-for-testing` derrived-data folder |  String |
+|  binary_path |    |  Path to App Binary |  String |
+|  test_binary_path |    |  Path to App Binary |  String |
+|  device_pool | IOS | AWS Device Farm Device Pool | String |
+|  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
+
+
 
 ## Credit
 it is based on a custom action by @icapps (https://github.com/icapps/fastlane-configuration)

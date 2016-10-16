@@ -1,4 +1,5 @@
 *.gem
+aws
 Gemfile.lock
 
 ## Documentation cache and generated files:
