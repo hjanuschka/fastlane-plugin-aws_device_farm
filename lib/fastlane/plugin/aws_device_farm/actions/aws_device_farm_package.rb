@@ -5,21 +5,20 @@ module Fastlane
         FileUtils.rm_rf "#{File.expand_path(params[:derrived_data_path])}/packages"
         Dir["#{File.expand_path(params[:derrived_data_path])}/Build/Intermediates/CodeCoverage/Products/Development-iphoneos/*.app"].each do |app|
           if app.include? 'Runner'
-            
+
             FileUtils.mkdir_p "#{File.expand_path(params[:derrived_data_path])}/packages/runner/Payload"
             FileUtils.cp_r app, "#{File.expand_path(params[:derrived_data_path])}/packages/runner/Payload"
             Actions.sh "cd #{File.expand_path(params[:derrived_data_path])}/packages/runner/; zip --recurse-paths -D --quiet #{File.expand_path(params[:derrived_data_path])}/packages/runner.ipa .;"
-            
+
             ENV['FL_AWS_DEVICE_FARM_TEST_PATH'] = "#{File.expand_path(params[:derrived_data_path])}/packages/runner.ipa"
           else
-            
+
             FileUtils.mkdir_p "#{File.expand_path(params[:derrived_data_path])}/packages/app/Payload"
             FileUtils.cp_r app, "#{File.expand_path(params[:derrived_data_path])}/packages/app/Payload"
             Actions.sh "cd  #{File.expand_path(params[:derrived_data_path])}/packages/app/; zip --recurse-paths -D --quiet #{File.expand_path(params[:derrived_data_path])}/packages/app.ipa .;"
-            
-            
+
             ENV['FL_AWS_DEVICE_FARM_PATH'] = "#{File.expand_path(params[:derrived_data_path])}/packages/app.ipa"
-            
+
           end
         end
       end

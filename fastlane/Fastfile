@@ -1,8 +1,9 @@
+# rubocop:disable BlockLength
 lane :package do
   ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
   ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
   ENV['AWS_REGION']            = 'us-west-2'
-  
+
   xcodebuild(
     workspace: 'FiveXFive.xcworkspace',
     scheme: 'UITests',
@@ -11,7 +12,7 @@ lane :package do
     derivedDataPath: 'aws',
     xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO build-for-testing"
   )
-  
+
   aws_device_farm_package(
     derrived_data_path: "aws"
   )

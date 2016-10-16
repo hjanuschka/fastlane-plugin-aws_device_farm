@@ -96,7 +96,6 @@ module Fastlane
             is_string:   true,
             optional:    false,
             verify_block: proc do |value|
-              
               raise "Application binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
           ),
@@ -107,10 +106,9 @@ module Fastlane
             is_string:   true,
             optional:    true,
             verify_block: proc do |value|
-              
               raise "Test binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
-            
+
           ),
           FastlaneCore::ConfigItem.new(
             key:         :path,
