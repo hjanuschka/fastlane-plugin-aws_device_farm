@@ -48,6 +48,7 @@ lane :aws_device_run_ios do
   aws_device_farm_package(
     derrived_data_path: "aws"
   )
+  # RUN tests on AWS Device Farm
   aws_device_farm
 end
 ```
