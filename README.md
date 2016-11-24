@@ -40,13 +40,14 @@ lane :aws_device_run_ios do
   xcodebuild(
     scheme: 'UITests',
     destination: 'generic/platform=iOS',
-    configuration: 'Development',
+    configuration: 'Release',
     derivedDataPath: 'aws',
     xcargs: "GCC_PREPROCESSOR_DEFINITIONS='AWS_UI_TEST' ENABLE_BITCODE=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO build-for-testing"
   )
   # Transform .app into AWS compatible IPA
   aws_device_farm_package(
-    derrived_data_path: "aws"
+    derrived_data_path: "aws",
+    configuration: "Release"
   )
   # RUN tests on AWS Device Farm
   aws_device_farm
