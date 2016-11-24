@@ -93,6 +93,7 @@ end
 |  Option |  Default  |  Description |  Type |
 |---|---|---|---|
 |  derrived_data_path |    |  Derrived Data Path, containing a `build-for-testing` derrived-data folder |  String |
+|  derrived_data_path |  Development   |  Specify the Build-Configuration that was used e.g.: Development |  String |
 
 
 
