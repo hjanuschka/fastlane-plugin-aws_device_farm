@@ -3,7 +3,7 @@ module Fastlane
     class AwsDeviceFarmPackageAction < Action
       def self.run(params)
         FileUtils.rm_rf "#{File.expand_path(params[:derrived_data_path])}/packages"
-        Dir["#{File.expand_path(params[:derrived_data_path])}/Build/Products/Development-iphoneos/*.app"].each do |app|
+        Dir["#{File.expand_path(params[:derrived_data_path])}/Build/Products/#{params[:configuration]}-iphoneos/*.app"].each do |app|
           if app.include? 'Runner'
 
             FileUtils.mkdir_p "#{File.expand_path(params[:derrived_data_path])}/packages/runner/Payload"
@@ -43,6 +43,14 @@ module Fastlane
             description: 'Derrived Data Path',
             is_string:   true,
             optional:    false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :configuration,
+            env_name:    'FL_AWS_DEVICE_FARM_CONFIGURATION',
+            description: 'Configuration',
+            is_string:   true,
+            optional:    true,
+            default_value: "Development"
           )
         ]
       end
