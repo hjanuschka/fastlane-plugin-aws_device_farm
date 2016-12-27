@@ -53,7 +53,7 @@ module Fastlane
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
-        run = schedule_run project, device_pool, upload, test_upload, type
+        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type
 
         # Wait for run to finish.
         if params[:wait_for_completion]
@@ -88,6 +88,13 @@ module Fastlane
             is_string:   true,
             default_value: 'fastlane',
             optional:    false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :run_name,
+            env_name:    'FL_AWS_DEVICE_FARM_RUN_NAME',
+            description: 'Define the name of the device farm run',
+            is_string:   true,
+            optional:    true
           ),
           FastlaneCore::ConfigItem.new(
             key:         :binary_path,
@@ -201,7 +208,7 @@ module Fastlane
         device_pools.device_pools.detect { |p| p.name == device_pool }
       end
 
-      def self.schedule_run(project, device_pool, upload, test_upload, type)
+      def self.schedule_run(name, project, device_pool, upload, test_upload, type)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
         if test_upload
@@ -213,6 +220,7 @@ module Fastlane
         end
 
         @client.schedule_run({
+          name:            name,
           project_arn:     project.arn,
           app_arn:         upload.arn,
           device_pool_arn: device_pool.arn,
