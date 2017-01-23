@@ -11,7 +11,7 @@ module Fastlane
 
         # Fetch the project
         project = fetch_project params[:name]
-        raise "Project '#{params[:name]}' not found." if project.nil?
+        raise "Project '#{params[:name]}' not be found on AWS - please go to 'Device Farm' and create a project named: 'fastlane', or set the 'name' parameter with your custom message." if project.nil?
 
         # Fetch the device pool.
         device_pool = fetch_device_pool project, params[:device_pool]
