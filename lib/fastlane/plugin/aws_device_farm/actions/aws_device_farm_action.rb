@@ -193,7 +193,7 @@ module Fastlane
 
       def self.wait_for_upload(upload)
         upload = fetch_upload_status upload
-        while upload.status == 'PROCESSING'
+        while upload.status == 'PROCESSING' || upload.status == 'INITIALIZED'
           sleep POLLING_INTERVAL
           upload = fetch_upload_status upload
         end
