@@ -35,7 +35,6 @@ lane :aws_device_run_ios do
   ENV['AWS_ACCESS_KEY_ID']     = 'xxxxx'
   ENV['AWS_SECRET_ACCESS_KEY'] = 'xxxxx'
   ENV['AWS_REGION']            = 'us-west-2'
-  
   #Build For Testing
   xcodebuild(
     scheme: 'UITests',
@@ -78,7 +77,7 @@ end
 ## Options
 
  * **aws_device_farm**
- 
+
 |  Option |  Default  |  Description |  Type |
 |---|---|---|---|
 |  name |  fastlane  |  AWS Device Farm Project Name |  String |
@@ -86,7 +85,7 @@ end
 |  test_binary_path |    |  Path to App Binary |  String |
 |  device_pool | IOS | AWS Device Farm Device Pool | String |
 |  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
-
+|  allow_device_errors | false | Do you want to allow device booting errors? | Boolean |
 
 
 * **aws_device_farm_package**
@@ -97,7 +96,6 @@ end
 |  derrived_data_path |  Development   |  Specify the Build-Configuration that was used e.g.: Development |  String |
 
 
-
 ## Credit
 it is based on a custom action by @icapps (https://github.com/icapps/fastlane-configuration)
 added the following:
@@ -105,7 +103,7 @@ added the following:
   * support current `fastlane` version
   * improve output
   * make it available as a `fastlane` plugin
-  
+
 
 ## Troubleshooting
 
