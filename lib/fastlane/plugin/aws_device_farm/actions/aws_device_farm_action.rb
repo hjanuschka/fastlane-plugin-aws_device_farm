@@ -59,8 +59,11 @@ module Fastlane
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
           run = wait_for_run run
-          raise "#{run.message} Failed 🙈" unless %w(PASSED WARNED).include? run.result
-
+          if params[:allow_device_errors] == true
+            raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
+          else
+            raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED].include? run.result
+          end
           UI.message 'Successfully tested the application on the AWS device farm. ✅'.green
         else
           UI.message 'Successfully scheduled the tests on the AWS device farm. ✅'.green
@@ -115,7 +118,6 @@ module Fastlane
             verify_block: proc do |value|
               raise "Test binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
-
           ),
           FastlaneCore::ConfigItem.new(
             key:         :path,
@@ -142,6 +144,14 @@ module Fastlane
             is_string:     false,
             optional:      true,
             default_value: true
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:           :allow_device_errors,
+            env_name:      'FL_AWS_DEVICE_FARM_ALLOW_ERROR',
+            description:   'Do you want to allow device booting errors?',
+            is_string:     false,
+            optional:      true,
+            default_value: false
           )
         ]
       end
@@ -249,9 +259,11 @@ module Fastlane
         rows = []
         job.jobs.each do |j|
           if j.result == "PASSED"
-            status = "💚"
+            status = "💚 (#{j.result})"
+          elsif j.result == "ERRORED"
+            status = "📵 (#{j.result})"
           else
-            status = "💥"
+            status = "💥 (#{j.result})"
           end
           rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
         end
