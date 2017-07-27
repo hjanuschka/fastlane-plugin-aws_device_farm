@@ -1,4 +1,6 @@
+# rubocop:disable Style/FileName
 # coding: utf-8
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/aws_device_farm/version'
@@ -7,10 +9,10 @@ Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-aws_device_farm'
   spec.version       = Fastlane::AwsDeviceFarm::VERSION
   spec.version = "#{spec.version}-alpha-#{ENV['TRAVIS_BUILD_NUMBER']}" if ENV['TRAVIS']
-  spec.author        = %q{Helmut Januschka}
-  spec.email         = %q{helmut@januschka.com}
+  spec.author        = 'Helmut Januschka'
+  spec.email         = 'helmut@januschka.com'
 
-  spec.summary       = %q{Run UI Tests on AWS Devicefarm}
+  spec.summary       = 'Run UI Tests on AWS Devicefarm'
   spec.homepage      = "https://github.com/hjanuschka/fastlane-plugin-aws_device_farm"
   spec.license       = "MIT"
 
