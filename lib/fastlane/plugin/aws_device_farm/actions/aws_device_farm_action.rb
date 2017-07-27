@@ -30,11 +30,14 @@ module Fastlane
         test_upload = nil
         if params[:test_binary_path]
           test_path = File.expand_path(params[:test_binary_path])
-          if type == "ANDROID_APP"
-            test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
+          if params[:test_package_type]
+            test_upload = create_project_upload project, test_path, params[:test_package_type]
           else
-
-            test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+            if type == "ANDROID_APP"
+              test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
+            else
+              test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+            end
           end
 
           # Upload the test binary.
@@ -53,7 +56,7 @@ module Fastlane
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
-        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type
+        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
 
         # Wait for run to finish.
         if params[:wait_for_completion]
@@ -112,13 +115,60 @@ module Fastlane
           FastlaneCore::ConfigItem.new(
             key:         :test_binary_path,
             env_name:    'FL_AWS_DEVICE_FARM_TEST_PATH',
-            description: 'Define the path of the test binary (apk) to upload to the device farm project',
+            description: 'Define the path of the test bundle to upload to the device farm project',
             is_string:   true,
             optional:    true,
             verify_block: proc do |value|
-              raise "Test binary not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
+              raise "Test bundle not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
           ),
+          FastlaneCore::ConfigItem.new(
+            key:         :test_package_type,
+            env_name:    'FL_AWS_DEVICE_FARM_TEST_PACKAGE_TYPE',
+            description: 'Define the type of the test binary to upload to the device farm project',
+            is_string:   true,
+            optional:    true,
+            verify_block: proc do |value|
+              valid_values = ['APPIUM_JAVA_JUNIT_TEST_PACKAGE',
+                              'APPIUM_JAVA_TESTNG_TEST_PACKAGE',
+                              'APPIUM_PYTHON_TEST_PACKAGE',
+                              'APPIUM_WEB_JAVA_JUNIT_TEST_PACKAGE',
+                              'APPIUM_WEB_JAVA_TESTNG_TEST_PACKAGE',
+                              'APPIUM_WEB_PYTHON_TEST_PACKAGE',
+                              'CALABASH_TEST_PACKAGE',
+                              'INSTRUMENTATION_TEST_PACKAGE',
+                              'UIAUTOMATION_TEST_PACKAGE',
+                              'UIAUTOMATOR_TEST_PACKAGE',
+                              'XCTEST_TEST_PACKAGE',
+                              'XCTEST_UI_TEST_PACKAGE']
+              raise "Test package type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
+            end
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :test_type,
+            env_name:    'FL_AWS_DEVICE_FARM_TEST_TYPE',
+            description: 'Define the type of the test binary to upload to the device farm project',
+            is_string:   true,
+            optional:    true,
+            verify_block: proc do |value|
+              valid_values = ['UIAUTOMATOR',
+                              'APPIUM_WEB_PYTHON',
+                              'CALABASH',
+                              'APPIUM_JAVA_TESTNG',
+                              'UIAUTOMATION',
+                              'BUILTIN_FUZZ',
+                              'INSTRUMENTATION',
+                              'APPIUM_JAVA_JUNIT',
+                              'XCTEST_UI',
+                              'APPIUM_WEB_JAVA_JUNIT',
+                              'APPIUM_PYTHON',
+                              'BUILTIN_EXPLORER',
+                              'XCTEST',
+                              'APPIUM_WEB_JAVA_TESTNG']
+              raise "Test type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
+            end
+          ),
+
           FastlaneCore::ConfigItem.new(
             key:         :path,
             env_name:    'FL_AWS_DEVICE_FARM_PATH',
@@ -218,14 +268,19 @@ module Fastlane
         device_pools.device_pools.detect { |p| p.name == device_pool }
       end
 
-      def self.schedule_run(name, project, device_pool, upload, test_upload, type)
+      def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
         if test_upload
-          test_hash[:type] = 'XCTEST_UI'
-          if type == "ANDROID_APP"
-            test_hash[:type] = 'INSTRUMENTATION'
+          if params[:test_type]
+            test_hash[:type] = params[:test_type]
+          else
+            test_hash[:type] = 'XCTEST_UI'
+            if type == "ANDROID_APP"
+              test_hash[:type] = 'INSTRUMENTATION'
+            end
           end
+
           test_hash[:test_package_arn] = test_upload.arn
         end
 
