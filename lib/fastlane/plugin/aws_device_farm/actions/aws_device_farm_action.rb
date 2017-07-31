@@ -61,11 +61,13 @@ module Fastlane
         # Wait for run to finish.
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
-          run = wait_for_run run
-          if params[:allow_device_errors] == true
-            raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
-          else
-            raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED].include? run.result
+          run = wait_for_run project, run
+          if params[:allow_failed_tests] == false
+            if params[:allow_device_errors] == true
+              raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
+            else
+              raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED].include? run.result
+            end
           end
           UI.message 'Successfully tested the application on the AWS device farm. ✅'.green
         else
@@ -202,6 +204,14 @@ module Fastlane
             is_string:     false,
             optional:      true,
             default_value: false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:           :allow_failed_tests,
+            env_name:      'FL_AWS_DEVICE_FARM_ALLOW_FAILED_TESTS',
+            description:   'Do you want to allow failing tests?',
+            is_string:     false,
+            optional:      true,
+            default_value: false
           )
         ]
       end
@@ -299,7 +309,7 @@ module Fastlane
         }).run
       end
 
-      def self.wait_for_run(run)
+      def self.wait_for_run(project, run)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
           run = fetch_run_status run
@@ -307,9 +317,14 @@ module Fastlane
         UI.message "The run ended with result #{run.result}."
         UI.important "Minutes Counted: #{run.device_minutes.total}"
 
+        UI.verbose "RUN ARN: #{run.arn}."
+        ENV["AWS_DEVICE_FARM_RUN_ARN"] = run.arn
+        UI.verbose "PROJECT ARN: #{project.arn}."
+        ENV["AWS_DEVICE_FARM_PROJECT_ARN"] = project.arn
+
         job = @client.list_jobs({
-                arn: run.arn
-            })
+            arn: run.arn
+        })
 
         rows = []
         job.jobs.each do |j|
