@@ -74,6 +74,10 @@ lane :aws_device_run_android do
 end
 ```
 
+The plugin also exposes two ENV variables in case you want to make additional calls after the action is finished.
+`ENV["AWS_DEVICE_FARM_RUN_ARN"] containing the arn of the run`
+`ENV["AWS_DEVICE_FARM_PROJECT_ARN"] containing the arn of the project`
+
 ## Options
 
  * **aws_device_farm**
