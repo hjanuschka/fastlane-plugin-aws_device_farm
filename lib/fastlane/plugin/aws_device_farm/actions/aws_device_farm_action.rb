@@ -59,6 +59,7 @@ module Fastlane
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
 
         # Wait for run to finish.
+        # rubocop:disable  Metrics/BlockNesting
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
           run = wait_for_run project, run
@@ -74,7 +75,8 @@ module Fastlane
           UI.message 'Successfully scheduled the tests on the AWS device farm. ✅'.green
         end
       end
-
+      # rubocop:enable  Metrics/BlockNesting
+      #
       #####################################################
       # @!group Documentation
       #####################################################
