@@ -88,6 +88,7 @@ end
 |  device_pool | IOS | AWS Device Farm Device Pool | String |
 |  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
 |  allow_device_errors | false | Do you want to allow device booting errors? | Boolean |
+|  allow_failed_tests | false | Do you want to allow failing tests? | Boolean |
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
