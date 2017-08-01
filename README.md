@@ -74,6 +74,10 @@ lane :aws_device_run_android do
 end
 ```
 
+The plugin also exposes two ENV variables in case you want to make additional calls after the action is finished.
+`ENV["AWS_DEVICE_FARM_RUN_ARN"] containing the arn of the run`
+`ENV["AWS_DEVICE_FARM_PROJECT_ARN"] containing the arn of the project`
+
 ## Options
 
  * **aws_device_farm**
@@ -88,6 +92,7 @@ end
 |  device_pool | IOS | AWS Device Farm Device Pool | String |
 |  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
 |  allow_device_errors | false | Do you want to allow device booting errors? | Boolean |
+|  allow_failed_tests | false | Do you want to allow failing tests? | Boolean |
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
