@@ -314,6 +314,7 @@ module Fastlane
       def self.wait_for_run(project, run)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
+          print '.'
           run = fetch_run_status run
         end
         UI.message "The run ended with result #{run.result}."
