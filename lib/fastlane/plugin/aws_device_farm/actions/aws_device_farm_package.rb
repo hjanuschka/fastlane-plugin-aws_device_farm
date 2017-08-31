@@ -4,7 +4,6 @@ module Fastlane
       def self.run(params)
         derrived_data_dir = File.expand_path(params[:derrived_data_path])
         packages_dir = "#{derrived_data_dir}/packages"
-        
         FileUtils.rm_rf packages_dir
         Dir["#{derrived_data_dir}/Build/Products/#{params[:configuration]}-iphoneos/*.app"].each do |app|
           if app.include? 'Runner'
