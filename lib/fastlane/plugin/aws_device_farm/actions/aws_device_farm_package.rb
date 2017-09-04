@@ -2,22 +2,24 @@ module Fastlane
   module Actions
     class AwsDeviceFarmPackageAction < Action
       def self.run(params)
-        FileUtils.rm_rf "#{File.expand_path(params[:derrived_data_path])}/packages"
-        Dir["#{File.expand_path(params[:derrived_data_path])}/Build/Products/#{params[:configuration]}-iphoneos/*.app"].each do |app|
+        derrived_data_dir = File.expand_path(params[:derrived_data_path])
+        packages_dir = "#{derrived_data_dir}/packages"
+        FileUtils.rm_rf packages_dir
+        Dir["#{derrived_data_dir}/Build/Products/#{params[:configuration]}-iphoneos/*.app"].each do |app|
           if app.include? 'Runner'
 
-            FileUtils.mkdir_p "#{File.expand_path(params[:derrived_data_path])}/packages/runner/Payload"
-            FileUtils.cp_r app, "#{File.expand_path(params[:derrived_data_path])}/packages/runner/Payload"
-            Actions.sh "cd #{File.expand_path(params[:derrived_data_path])}/packages/runner/; zip --recurse-paths -D --quiet #{File.expand_path(params[:derrived_data_path])}/packages/runner.ipa .;"
+            FileUtils.mkdir_p "#{packages_dir}/runner/Payload"
+            FileUtils.cp_r app, "#{packages_dir}/runner/Payload"
+            Actions.sh "cd #{packages_dir}/runner/; zip --recurse-paths -D --quiet #{packages_dir}/runner.ipa .;"
 
-            ENV['FL_AWS_DEVICE_FARM_TEST_PATH'] = "#{File.expand_path(params[:derrived_data_path])}/packages/runner.ipa"
+            ENV['FL_AWS_DEVICE_FARM_TEST_PATH'] = "#{packages_dir}/runner.ipa"
           else
 
-            FileUtils.mkdir_p "#{File.expand_path(params[:derrived_data_path])}/packages/app/Payload"
-            FileUtils.cp_r app, "#{File.expand_path(params[:derrived_data_path])}/packages/app/Payload"
-            Actions.sh "cd  #{File.expand_path(params[:derrived_data_path])}/packages/app/; zip --recurse-paths -D --quiet #{File.expand_path(params[:derrived_data_path])}/packages/app.ipa .;"
+            FileUtils.mkdir_p "#{packages_dir}/app/Payload"
+            FileUtils.cp_r app, "#{packages_dir}/app/Payload"
+            Actions.sh "cd #{packages_dir}/app/; zip --recurse-paths -D --quiet #{packages_dir}/app.ipa .;"
 
-            ENV['FL_AWS_DEVICE_FARM_PATH'] = "#{File.expand_path(params[:derrived_data_path])}/packages/app.ipa"
+            ENV['FL_AWS_DEVICE_FARM_PATH'] = "#{packages_dir}/app.ipa"
 
           end
         end
