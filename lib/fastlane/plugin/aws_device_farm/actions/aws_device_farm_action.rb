@@ -214,6 +214,14 @@ module Fastlane
             is_string:     false,
             optional:      true,
             default_value: false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:           :filter,
+            env_name:      'FL_AWS_DEVICE_FARM_FILTER',
+            description:   'Define a filter for your test run and only run the tests in the filter',
+            is_string:     true,
+            optional:      true,
+            default_value: ''
           )
         ]
       end
@@ -294,6 +302,7 @@ module Fastlane
           end
 
           test_hash[:test_package_arn] = test_upload.arn
+          test_hash[:filter] = params[:filter]
         end
 
         @client.schedule_run({
