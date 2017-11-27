@@ -93,6 +93,7 @@ The plugin also exposes two ENV variables in case you want to make additional ca
 |  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
 |  allow_device_errors | false | Do you want to allow device booting errors? | Boolean |
 |  allow_failed_tests | false | Do you want to allow failing tests? | Boolean |
+|  filter |    | Define a filter for your test run and only run the tests in the filter | String |
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
