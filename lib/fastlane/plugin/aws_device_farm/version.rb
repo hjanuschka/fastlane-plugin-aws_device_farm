@@ -1,5 +1,5 @@
 module Fastlane
   module AwsDeviceFarm
-    VERSION = "0.3.4"
+    VERSION = "1.3.4"
   end
 end
