@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.email         = 'helmut@januschka.com'
 
   spec.summary       = 'Run UI Tests on AWS Devicefarm'
-  spec.homepage      = "https://github.com/mjemodus/fastlane-plugin-aws_device_farm"
+  spec.homepage      = "https://github.com/hjanuschka/fastlane-plugin-aws_device_farm"
   spec.license       = "MIT"
 
   spec.files         = Dir["lib/**/*"] + %w(README.md LICENSE)
