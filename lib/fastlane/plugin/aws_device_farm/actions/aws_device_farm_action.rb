@@ -222,7 +222,7 @@ module Fastlane
             is_string:     true,
             optional:      true,
             default_value: ''
-          )
+          ),
           FastlaneCore::ConfigItem.new(
             key:           :billing_method,
             env_name:      'FL_AWS_DEVICE_FARM_BILLING_METHOD',
