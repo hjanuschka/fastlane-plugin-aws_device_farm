@@ -229,7 +229,7 @@ module Fastlane
             description:   'Specify the billing method for the run',
             is_string:     true,
             optional:      true,
-            default_value: 'metered' # acceots metered, unmetered
+            default_value: 'METERED' # accepts METERED, UNMETERED
           )
           # FastlaneCore::ConfigItem.new(
           #   key:           :latitude,
