@@ -246,7 +246,7 @@ module Fastlane
           #   is_string:     true,
           #   optional:      true,
           #   default_value: '-122.3'
-          )
+          # )
         ]
       end
 
