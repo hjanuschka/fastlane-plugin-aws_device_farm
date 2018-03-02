@@ -222,6 +222,14 @@ module Fastlane
             is_string:     true,
             optional:      true,
             default_value: ''
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:           :billing_method,
+            env_name:      'FL_AWS_DEVICE_FARM_BILLING_METHOD',
+            description:   'Specify the billing method for the run',
+            is_string:     true,
+            optional:      true,
+            default_value: 'METERED' # accepts METERED, UNMETERED
           )
         ]
       end
@@ -305,12 +313,17 @@ module Fastlane
           test_hash[:filter] = params[:filter]
         end
 
+        configuration_hash = {
+        }
+        configuration_hash[:billing_method] = params[:billing_method]
+
         @client.schedule_run({
           name:            name,
           project_arn:     project.arn,
           app_arn:         upload.arn,
           device_pool_arn: device_pool.arn,
-          test:            test_hash
+          test:            test_hash,
+          configuration:   configuration_hash
         }).run
       end
 
