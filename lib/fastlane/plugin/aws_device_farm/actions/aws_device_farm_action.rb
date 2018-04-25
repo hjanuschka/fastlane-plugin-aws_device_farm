@@ -230,7 +230,14 @@ module Fastlane
             is_string:     true,
             optional:      true,
             default_value: 'METERED' # accepts METERED, UNMETERED
-          )
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:           :locale,
+            env_name:      'FL_AWS_DEVICE_FARM_LOCALE',
+            description:   'Specify the locale for the run',
+            is_string:     true,
+            optional:      true,
+            default_value: 'en_US')
         ]
       end
 
@@ -314,8 +321,9 @@ module Fastlane
         end
 
         configuration_hash = {
+          billing_method: params[:billing_method],
+          locale: params[:locale]
         }
-        configuration_hash[:billing_method] = params[:billing_method]
 
         @client.schedule_run({
           name:            name,
