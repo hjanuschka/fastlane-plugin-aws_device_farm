@@ -1,6 +1,7 @@
 require 'aws-sdk'
 module Fastlane
   module Actions
+    # rubocop:disable Metrics/ClassLength
     class AwsDeviceFarmAction < Action
       def self.run(params)
         Actions.verify_gem!('aws-sdk')
@@ -237,7 +238,8 @@ module Fastlane
             description:   'Specify the locale for the run',
             is_string:     true,
             optional:      true,
-            default_value: 'en_US')
+            default_value: 'en_US'
+          )
         ]
       end
 
