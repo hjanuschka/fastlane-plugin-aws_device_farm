@@ -326,10 +326,11 @@ module Fastlane
 
           if params[:test_spec]
               test_hash[:test_spec_arn] = params[:test_spec]
+          else
+              test_hash[:filter] = params[:filter]
           end
 
           test_hash[:test_package_arn] = test_upload.arn
-          test_hash[:filter] = params[:filter]
         end
 
         configuration_hash = {
