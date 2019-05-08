@@ -173,7 +173,6 @@ module Fastlane
               raise "Test type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
             end
           ),
-
           FastlaneCore::ConfigItem.new(
             key:         :path,
             env_name:    'FL_AWS_DEVICE_FARM_PATH',
@@ -239,6 +238,13 @@ module Fastlane
             is_string:     true,
             optional:      true,
             default_value: 'en_US'
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :test_spec,
+            env_name:    'FL_AWS_TEST_SPEC',
+            description: 'Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command)',
+            is_string:   true,
+            optional:    true
           )
         ]
       end
@@ -251,7 +257,7 @@ module Fastlane
       end
 
       def self.authors
-        ["fousa/fousa", "hjanuschka"]
+        ["fousa/fousa", "hjanuschka", "cmarchal"]
       end
 
       def self.is_supported?(platform)
@@ -318,8 +324,13 @@ module Fastlane
             end
           end
 
+          if params[:test_spec]
+              test_hash[:test_spec_arn] = params[:test_spec]
+          else
+              test_hash[:filter] = params[:filter]
+          end
+
           test_hash[:test_package_arn] = test_upload.arn
-          test_hash[:filter] = params[:filter]
         end
 
         configuration_hash = {

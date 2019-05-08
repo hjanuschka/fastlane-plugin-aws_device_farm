@@ -44,7 +44,9 @@ Naming/VariableNumber:
   Enabled: false
 
 # This is used a lot across the fastlane code base for config files
-Style/MethodMissing:
+Style/MethodMissingSuper:
+  Enabled: false
+Style/MissingRespondToMissing:
   Enabled: false
 
 #
@@ -81,7 +83,7 @@ Lint/UselessAssignment:
     - '**/spec/**/*'
 
 # We could potentially enable the 2 below:
-Layout/IndentHash:
+Layout/IndentFirstHashElement:
   Enabled: false
 
 Layout/AlignHash:
