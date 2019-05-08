@@ -57,7 +57,7 @@ module Fastlane
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
-        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        scheduled_run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
 
         # Wait for run to finish.
         # rubocop:disable  Metrics/BlockNesting
@@ -75,6 +75,8 @@ module Fastlane
         else
           UI.message 'Successfully scheduled the tests on the AWS device farm. ✅'.green
         end
+        
+        run = scheduled_run
       end
       # rubocop:enable  Metrics/BlockNesting
       #
