@@ -57,7 +57,10 @@ module Fastlane
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
-        scheduled_run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        run_url = get_run_url_from_arn run.arn
+        ENV["AWS_DEVICE_FARM_WEB_URL_OF_RUN"] = run_url
+        UI.message "The Device Farm console URL for the run: #{run_url}" if params[:print_web_url_of_run] == true
 
         # Wait for run to finish.
         # rubocop:disable  Metrics/BlockNesting
@@ -75,8 +78,8 @@ module Fastlane
         else
           UI.message 'Successfully scheduled the tests on the AWS device farm. ✅'.green
         end
-        
-        run = scheduled_run
+
+        run
       end
       # rubocop:enable  Metrics/BlockNesting
       #
@@ -247,6 +250,14 @@ module Fastlane
             description: 'Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command)',
             is_string:   true,
             optional:    true
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :print_web_url_of_run,
+            env_name:    'FL_AWS_DEVICE_FARM_WEB_URL_OF_RUN',
+            description: 'Print the web url of the test run to or not',
+            is_string:   false,
+            optional:    true,
+            default_value: false
           )
         ]
       end
@@ -394,6 +405,26 @@ module Fastlane
         puts ""
 
         run
+      end
+      def self.get_run_url_from_arn(arn)
+        project_id = get_project_id_from_arn arn
+        run_id = get_run_id_from_arn arn
+        region_id = get_region_from_arn arn
+        "https://#{region_id}.console.aws.amazon.com/devicefarm/home?region=#{region_id}#/projects/#{project_id}/runs/#{run_id}"
+      end
+      def self.get_project_id_from_arn(arn)
+        project_run_id = split_run_arn arn
+        project_run_id[0]
+      end
+      def self.get_run_id_from_arn(arn)
+        project_run_id = split_run_arn arn
+        project_run_id[1]
+      end
+      def self.get_region_from_arn(arn)
+        arn.split(':')[3]
+      end
+      def self.split_run_arn(arn)
+        arn.split(':')[6].split('/')
       end
     end
   end
