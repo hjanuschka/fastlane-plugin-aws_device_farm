@@ -354,7 +354,7 @@ module Fastlane
         end
 
         # vpce
-        vpce_config_arns = []
+        vpce_config_arns = nil
         if params.key?("vpce_configuration_arn")
           vpce_config_arns = [
             params[:vpce_configuration_arn]
