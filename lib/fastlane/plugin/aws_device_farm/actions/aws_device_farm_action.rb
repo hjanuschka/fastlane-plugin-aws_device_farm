@@ -346,7 +346,16 @@ module Fastlane
           test_hash[:test_package_arn] = test_upload.arn
         end
 
+        # vpce
+        vpce_config_arns = []
+        if params.key?("vpce_configuration_arn")
+          vpce_config_arns = [
+            params[:vpce_configuration_arn]
+          ]
+        end
+
         configuration_hash = {
+          vpce_configuration_arns: vpce_config_arns,
           billing_method: params[:billing_method],
           locale: params[:locale]
         }
