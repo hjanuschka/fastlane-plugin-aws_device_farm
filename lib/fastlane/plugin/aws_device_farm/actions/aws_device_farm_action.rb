@@ -150,7 +150,23 @@ module Fastlane
                               'UIAUTOMATION_TEST_PACKAGE',
                               'UIAUTOMATOR_TEST_PACKAGE',
                               'XCTEST_TEST_PACKAGE',
-                              'XCTEST_UI_TEST_PACKAGE']
+                              'XCTEST_UI_TEST_PACKAGE',
+                              'APPIUM_NODE_TEST_PACKAGE',
+                              'APPIUM_RUBY_TEST_PACKAGE',
+                              'APPIUM_WEB_NODE_TEST_PACKAGE',
+                              'APPIUM_WEB_RUBY_TEST_PACKAGE',
+                              'APPIUM_JAVA_JUNIT_TEST_SPEC',
+                              'APPIUM_JAVA_TESTNG_TEST_SPEC',
+                              'APPIUM_PYTHON_TEST_SPEC',
+                              'APPIUM_NODE_TEST_SPEC',
+                              'APPIUM_RUBY_TEST_SPEC',
+                              'APPIUM_WEB_JAVA_JUNIT_TEST_SPEC',
+                              'APPIUM_WEB_JAVA_TESTNG_TEST_SPEC',
+                              'APPIUM_WEB_PYTHON_TEST_SPEC',
+                              'APPIUM_WEB_NODE_TEST_SPEC',
+                              'APPIUM_WEB_RUBY_TEST_SPEC',
+                              'INSTRUMENTATION_TEST_SPEC',
+                              'XCTEST_UI_TEST_SPEC']
               raise "Test package type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
             end
           ),
@@ -174,7 +190,14 @@ module Fastlane
                               'APPIUM_PYTHON',
                               'BUILTIN_EXPLORER',
                               'XCTEST',
-                              'APPIUM_WEB_JAVA_TESTNG']
+                              'APPIUM_WEB_JAVA_TESTNG',
+                              'WEB_PERFORMANCE_PROFILE',
+                              'APPIUM_NODE',
+                              'APPIUM_RUBY',
+                              'APPIUM_WEB_NODE',
+                              'APPIUM_WEB_RUBY',
+                              'REMOTE_ACCESS_RECORD',
+                              'REMOTE_ACCESS_REPLAY']
               raise "Test type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
             end
           ),
