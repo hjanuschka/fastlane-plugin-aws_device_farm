@@ -192,12 +192,10 @@ module Fastlane
                               'XCTEST',
                               'APPIUM_WEB_JAVA_TESTNG',
                               'WEB_PERFORMANCE_PROFILE',
-                              'APPIUM_JAVA_TESTNG',
                               'APPIUM_NODE',
                               'APPIUM_RUBY',
                               'APPIUM_WEB_NODE',
                               'APPIUM_WEB_RUBY',
-                              'CALABASH',
                               'REMOTE_ACCESS_RECORD',
                               'REMOTE_ACCESS_REPLAY']
               raise "Test type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
