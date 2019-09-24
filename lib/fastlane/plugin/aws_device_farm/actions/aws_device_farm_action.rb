@@ -36,7 +36,7 @@ module Fastlane
           else
             if type == "ANDROID_APP"
               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-            elsif params[:is_unit_test] == true
+            elsif params[:test_type] == 'XCTEST'
               test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
             else 
               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
@@ -358,8 +358,6 @@ module Fastlane
           else
             if type == "ANDROID_APP"
               test_hash[:type] = 'INSTRUMENTATION'
-            elsif params[:is_unit_test] == true
-              test_hash[:type] = 'XCTEST'
             else
               test_hash[:type] = 'XCTEST_UI'
             end

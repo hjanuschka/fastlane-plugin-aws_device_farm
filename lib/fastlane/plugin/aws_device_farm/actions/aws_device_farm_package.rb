@@ -53,17 +53,6 @@ module Fastlane
             is_string:   true,
             optional:    true,
             default_value: "Development"
-          ),
-          FastlaneCore::ConfigItem.new(
-            key:         :is_unit_test,
-            env_name:    'FL_AWS_DEVICE_FARM_IS_UNIT_TEST',
-            description: 'Specify is_unit_test to true if this is an iOS unit test',
-            is_string:   false,
-            optional:    true,
-            default_value: false,
-            verify_block: proc do |value|
-              UI.user_error!("Please pass a valid value for is_unit_test. Use one of the following: true, false") unless value.kind_of?(TrueClass) || value.kind_of?(FalseClass)
-            end
           )
         ]
       end
