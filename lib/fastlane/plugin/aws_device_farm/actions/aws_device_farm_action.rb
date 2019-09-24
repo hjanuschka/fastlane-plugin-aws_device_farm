@@ -12,7 +12,7 @@ module Fastlane
 
         # Fetch the project
         project = fetch_project params[:name]
-        raise "Project '#{params[:name]}' not be found on AWS - please go to 'Device Farm' and create a project named: 'fastlane', or set the 'name' parameter with your custom message." if project.nil?
+        raise "Project '#{params[:name]}' not found on AWS - please go to 'Device Farm' and create a project named: 'fastlane', or set the 'name' parameter with your custom message." if project.nil?
 
         # Fetch the device pool.
         device_pool = fetch_device_pool project, params[:device_pool]
@@ -36,7 +36,9 @@ module Fastlane
           else
             if type == "ANDROID_APP"
               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-            else
+            elsif params[:is_unit_test] == true
+              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
+            else 
               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
             end
           end
@@ -354,9 +356,12 @@ module Fastlane
           if params[:test_type]
             test_hash[:type] = params[:test_type]
           else
-            test_hash[:type] = 'XCTEST_UI'
             if type == "ANDROID_APP"
               test_hash[:type] = 'INSTRUMENTATION'
+            elsif params[:is_unit_test] == true
+              test_hash[:type] = 'XCTEST'
+            else
+              test_hash[:type] = 'XCTEST_UI'
             end
           end
 
