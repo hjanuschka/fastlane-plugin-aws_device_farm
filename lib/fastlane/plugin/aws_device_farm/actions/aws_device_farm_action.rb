@@ -38,7 +38,7 @@ module Fastlane
               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
             elsif params[:test_type] == 'XCTEST'
               test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
-            else 
+            else
               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
             end
           end
@@ -283,6 +283,14 @@ module Fastlane
             is_string:   false,
             optional:    true,
             default_value: false
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :print_waiting_periods,
+            env_name: 'FL_AWS_DEVICE_FARM_PRINT_WAITING_PERIODS',
+            description: 'Prints a period while waiting for tests to complete.',
+            is_string: false,
+            optional: true,
+            default_value: true
           )
         ]
       end
@@ -396,7 +404,9 @@ module Fastlane
       def self.wait_for_run(project, run)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
-          print '.'
+          if params[:print_waiting_periods]
+            print '.'
+          end
           run = fetch_run_status run
         end
         UI.message "The run ended with result #{run.result}."
