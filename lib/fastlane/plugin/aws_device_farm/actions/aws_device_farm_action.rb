@@ -12,7 +12,7 @@ module Fastlane
 
         # Fetch the project
         project = fetch_project params[:name]
-        raise "Project '#{params[:name]}' not be found on AWS - please go to 'Device Farm' and create a project named: 'fastlane', or set the 'name' parameter with your custom message." if project.nil?
+        raise "Project '#{params[:name]}' not found on AWS - please go to 'Device Farm' and create a project named: 'fastlane', or set the 'name' parameter with your custom message." if project.nil?
 
         # Fetch the device pool.
         device_pool = fetch_device_pool project, params[:device_pool]
@@ -36,7 +36,9 @@ module Fastlane
           else
             if type == "ANDROID_APP"
               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-            else
+            elsif params[:test_type] == 'XCTEST'
+              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
+            else 
               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
             end
           end
@@ -58,6 +60,9 @@ module Fastlane
 
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        run_url = get_run_url_from_arn run.arn
+        ENV["AWS_DEVICE_FARM_WEB_URL_OF_RUN"] = run_url
+        UI.message "The Device Farm console URL for the run: #{run_url}" if params[:print_web_url_of_run] == true
 
         # Wait for run to finish.
         # rubocop:disable  Metrics/BlockNesting
@@ -75,6 +80,8 @@ module Fastlane
         else
           UI.message 'Successfully scheduled the tests on the AWS device farm. ✅'.green
         end
+
+        run
       end
       # rubocop:enable  Metrics/BlockNesting
       #
@@ -145,7 +152,23 @@ module Fastlane
                               'UIAUTOMATION_TEST_PACKAGE',
                               'UIAUTOMATOR_TEST_PACKAGE',
                               'XCTEST_TEST_PACKAGE',
-                              'XCTEST_UI_TEST_PACKAGE']
+                              'XCTEST_UI_TEST_PACKAGE',
+                              'APPIUM_NODE_TEST_PACKAGE',
+                              'APPIUM_RUBY_TEST_PACKAGE',
+                              'APPIUM_WEB_NODE_TEST_PACKAGE',
+                              'APPIUM_WEB_RUBY_TEST_PACKAGE',
+                              'APPIUM_JAVA_JUNIT_TEST_SPEC',
+                              'APPIUM_JAVA_TESTNG_TEST_SPEC',
+                              'APPIUM_PYTHON_TEST_SPEC',
+                              'APPIUM_NODE_TEST_SPEC',
+                              'APPIUM_RUBY_TEST_SPEC',
+                              'APPIUM_WEB_JAVA_JUNIT_TEST_SPEC',
+                              'APPIUM_WEB_JAVA_TESTNG_TEST_SPEC',
+                              'APPIUM_WEB_PYTHON_TEST_SPEC',
+                              'APPIUM_WEB_NODE_TEST_SPEC',
+                              'APPIUM_WEB_RUBY_TEST_SPEC',
+                              'INSTRUMENTATION_TEST_SPEC',
+                              'XCTEST_UI_TEST_SPEC']
               raise "Test package type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
             end
           ),
@@ -169,7 +192,14 @@ module Fastlane
                               'APPIUM_PYTHON',
                               'BUILTIN_EXPLORER',
                               'XCTEST',
-                              'APPIUM_WEB_JAVA_TESTNG']
+                              'APPIUM_WEB_JAVA_TESTNG',
+                              'WEB_PERFORMANCE_PROFILE',
+                              'APPIUM_NODE',
+                              'APPIUM_RUBY',
+                              'APPIUM_WEB_NODE',
+                              'APPIUM_WEB_RUBY',
+                              'REMOTE_ACCESS_RECORD',
+                              'REMOTE_ACCESS_REPLAY']
               raise "Test type not found valid values are: '#{valid_values}'. 🙈".red unless valid_values.include? value
             end
           ),
@@ -244,7 +274,15 @@ module Fastlane
             env_name:    'FL_AWS_TEST_SPEC',
             description: 'Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command)',
             is_string:   true,
-            optional:    true
+            optional:    
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :print_web_url_of_run,
+            env_name:    'FL_AWS_DEVICE_FARM_WEB_URL_OF_RUN',
+            description: 'Print the web url of the test run to or not',
+            is_string:   false,
+            optional:    true,
+            default_value: false
           )
         ]
       end
@@ -318,9 +356,10 @@ module Fastlane
           if params[:test_type]
             test_hash[:type] = params[:test_type]
           else
-            test_hash[:type] = 'XCTEST_UI'
             if type == "ANDROID_APP"
               test_hash[:type] = 'INSTRUMENTATION'
+            else
+              test_hash[:type] = 'XCTEST_UI'
             end
           end
 
@@ -392,6 +431,26 @@ module Fastlane
         puts ""
 
         run
+      end
+      def self.get_run_url_from_arn(arn)
+        project_id = get_project_id_from_arn arn
+        run_id = get_run_id_from_arn arn
+        region_id = get_region_from_arn arn
+        "https://#{region_id}.console.aws.amazon.com/devicefarm/home?region=#{region_id}#/projects/#{project_id}/runs/#{run_id}"
+      end
+      def self.get_project_id_from_arn(arn)
+        project_run_id = split_run_arn arn
+        project_run_id[0]
+      end
+      def self.get_run_id_from_arn(arn)
+        project_run_id = split_run_arn arn
+        project_run_id[1]
+      end
+      def self.get_region_from_arn(arn)
+        arn.split(':')[3]
+      end
+      def self.split_run_arn(arn)
+        arn.split(':')[6].split('/')
       end
     end
   end
