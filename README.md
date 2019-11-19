@@ -98,6 +98,7 @@ The plugin also exposes two ENV variables in case you want to make additional ca
 |  test_spec |    | Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command) | String |
 |  filter |    | Define a filter for your test run and only run the tests in the filter (note that using `test_spec` overrides the `filter` option) | String |
 |  print_web_url_of_run  | false | Do you want to print the web url of run in the messages? | Boolean |
+|  print_waiting_periods | true | Do you want to print `.` while waiting for a run? | Boolean
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
