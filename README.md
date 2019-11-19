@@ -75,8 +75,10 @@ end
 ```
 
 The plugin also exposes two ENV variables in case you want to make additional calls after the action is finished.
-`ENV["AWS_DEVICE_FARM_RUN_ARN"] containing the arn of the run`
-`ENV["AWS_DEVICE_FARM_PROJECT_ARN"] containing the arn of the project`
+`ENV["AWS_DEVICE_FARM_RUN_ARN"] containing the arn of the run` \
+`ENV["AWS_DEVICE_FARM_PROJECT_ARN"] containing the arn of the project` \
+`ENV["AWS_DEVICE_FARM_WEB_URL_OF_RUN"] containg the web url of the run`
+
 
 ## Options
 
@@ -95,6 +97,7 @@ The plugin also exposes two ENV variables in case you want to make additional ca
 |  allow_failed_tests | false | Do you want to allow failing tests? | Boolean |
 |  test_spec |    | Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command) | String |
 |  filter |    | Define a filter for your test run and only run the tests in the filter (note that using `test_spec` overrides the `filter` option) | String |
+|  print_web_url_of_run  | false | Do you want to print the web url of run in the messages? | Boolean |
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
