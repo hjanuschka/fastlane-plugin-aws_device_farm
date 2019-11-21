@@ -68,7 +68,7 @@ module Fastlane
         # rubocop:disable  Metrics/BlockNesting
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
-          run = wait_for_run project, run
+          run = wait_for_run project, run, params
           if params[:allow_failed_tests] == false
             if params[:allow_device_errors] == true
               raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
@@ -393,7 +393,7 @@ module Fastlane
         }).run
       end
 
-      def self.wait_for_run(project, run)
+      def self.wait_for_run(project, run, params)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
           print '.'
@@ -429,6 +429,20 @@ module Fastlane
           rows: rows
         )
         puts ""
+
+        Dir.mkdir('fastlane/test_output') unless Dir.exist?('fastlane/test_output')
+        Dir.mkdir("fastlane/test_output/#{params[:name]}") unless Dir.exist?("fastlane/test_output/#{params[:name]}")
+        out_file = File.new("fastlane/test_output/#{params[:name]}/report.junit", "w")
+        out_file.write("<?xml version='1.0' encoding='UTF-8'?>")
+        out_file.write("<testsuite name='#{params[:name]}'>")
+        job.jobs.each do |j|
+          out_file.write("<testcase classname='#{params[:device_pool]}' name='#{j.name}' time='#{j.device_minutes.total*60}'>")
+          if j.result != "PASSED"
+            out_file.write("<failure type='Failed'>Test failed on #{j.name}</failure>")
+          end
+          out_file.write("</testcase>")
+        end
+        out_file.write("</testsuite>")
 
         run
       end
