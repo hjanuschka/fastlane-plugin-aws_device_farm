@@ -274,7 +274,7 @@ module Fastlane
             env_name:    'FL_AWS_TEST_SPEC',
             description: 'Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command)',
             is_string:   true,
-            optional:    
+            optional:    true
           ),
           FastlaneCore::ConfigItem.new(
             key:         :print_web_url_of_run,
