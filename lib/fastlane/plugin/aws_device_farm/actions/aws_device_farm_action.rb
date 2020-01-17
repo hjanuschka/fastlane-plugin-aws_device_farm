@@ -287,7 +287,7 @@ module Fastlane
           FastlaneCore::ConfigItem.new(
             key: :print_waiting_periods,
             env_name: 'FL_AWS_DEVICE_FARM_PRINT_WAITING_PERIODS',
-            description: 'Prints a period while waiting for tests to complete.',
+            description: 'Prints a period while waiting for tests to complete',
             is_string: false,
             optional: true,
             default_value: true
