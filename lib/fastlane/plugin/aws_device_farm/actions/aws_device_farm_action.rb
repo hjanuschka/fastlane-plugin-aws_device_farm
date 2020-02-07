@@ -90,11 +90,11 @@ module Fastlane
       #####################################################
 
       def self.description
-        'Upload the application to the AWS device farm.'
+        'Upload the application to the AWS device farm'
       end
 
       def self.details
-        'Upload the application to the AWS device farm.'
+        'Upload the application to the AWS device farm'
       end
 
       def self.available_options
