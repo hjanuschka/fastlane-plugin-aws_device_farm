@@ -8,7 +8,7 @@ module Fastlane
         UI.message 'Preparing the upload to the device farm.'
 
         # Instantiate the client.
-        @client = ::Aws::DeviceFarm::Client.new()
+        @client = ::Aws::DeviceFarm::Client.new
 
         # Fetch the project
         project = fetch_project params[:name]
