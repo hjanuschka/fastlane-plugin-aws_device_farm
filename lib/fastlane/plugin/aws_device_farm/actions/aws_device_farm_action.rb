@@ -68,7 +68,7 @@ module Fastlane
         # rubocop:disable  Metrics/BlockNesting
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
-          run = wait_for_run project, run
+          run = wait_for_run project, run, params
           if params[:allow_failed_tests] == false
             if params[:allow_device_errors] == true
               raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
@@ -90,11 +90,11 @@ module Fastlane
       #####################################################
 
       def self.description
-        'Upload the application to the AWS device farm.'
+        'Upload the application to the AWS device farm'
       end
 
       def self.details
-        'Upload the application to the AWS device farm.'
+        'Upload the application to the AWS device farm'
       end
 
       def self.available_options
@@ -401,7 +401,7 @@ module Fastlane
         }).run
       end
 
-      def self.wait_for_run(project, run)
+      def self.wait_for_run(project, run, params)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
           if params[:print_waiting_periods]
