@@ -69,7 +69,7 @@ module Fastlane
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
           run = wait_for_run project, run, params[:print_waiting_periods]
-          run = create_test_result run, params[:junit_xml_output_path]
+          run = create_test_result run, params
 
           if params[:allow_failed_tests] == false
             if params[:allow_device_errors] == true
@@ -301,6 +301,14 @@ module Fastlane
             is_string: true,
             optional: true,
             default_value: "junit.xml"
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :junit_xml,
+            env_name: 'FL_ALLOW_JUNIT_XML',
+            description: 'Do you create JUnit.xml?',
+            is_string: false,
+            optional: true,
+            default_value: false
           )
         ]
       end
@@ -430,7 +438,7 @@ module Fastlane
         run
       end
 
-      def self.create_test_result(run, file_path)
+      def self.create_test_result(run, params)
         job = @client.list_jobs({
                 arn: run.arn
               })
@@ -484,7 +492,7 @@ module Fastlane
               "time"     => j.device_minutes.metered,
               "test_suites" => test_suites
             }
-            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: file_path)
+            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: params[:junit_xml_output_path]) if params[:junit_xml]
           end
         end
 
