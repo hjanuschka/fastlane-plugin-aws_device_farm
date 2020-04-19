@@ -460,29 +460,29 @@ module Fastlane
             test_lists = []
             test.tests.each do |test|
               test_lists << {
-                  "class_name" => suite.name,
-                  "name"       => test.name,
-                  "time"       => test.device_minutes.metered
+                "class_name" => suite.name,
+                "name"       => test.name,
+                "time"       => test.device_minutes.metered
               }
             end
 
             test_suites << {
-                "name"     => suite.name,
-                "tests"    => suite.counters.total,
-                "failures" => suite.counters.failed,
-                "errors"   => suite.counters.errored,
-                "time"     => suite.device_minutes.metered,
-                "test_lists" => test_lists
+              "name"     => suite.name,
+              "tests"    => suite.counters.total,
+              "failures" => suite.counters.failed,
+              "errors"   => suite.counters.errored,
+              "time"     => suite.device_minutes.metered,
+              "test_lists" => test_lists
             }
 
             # test results
             test_results = {
-                "name"     => j.name,
-                "tests"    => j.counters.total,
-                "failures" => j.counters.failed,
-                "errors"   => j.counters.errored,
-                "time"     => j.device_minutes.metered,
-                "test_suites" => test_suites
+              "name"     => j.name,
+              "tests"    => j.counters.total,
+              "failures" => j.counters.failed,
+              "errors"   => j.counters.errored,
+              "time"     => j.device_minutes.metered,
+              "test_suites" => test_suites
             }
             Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: file_path)
           end
