@@ -1,4 +1,5 @@
 require 'aws-sdk'
+
 module Fastlane
   module Actions
     # rubocop:disable Metrics/ClassLength
@@ -68,7 +69,7 @@ module Fastlane
         # rubocop:disable  Metrics/BlockNesting
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
-          run = wait_for_run project, run, params[:print_waiting_periods]
+          run = wait_for_run project, run, params
           run = create_test_result run, params
 
           if params[:allow_failed_tests] == false
@@ -419,10 +420,10 @@ module Fastlane
         }).run
       end
 
-      def self.wait_for_run(project, run, print_waiting_periods)
+      def self.wait_for_run(project, run, params)
         while run.status != 'COMPLETED'
           sleep POLLING_INTERVAL
-          if print_waiting_periods
+          if params[:print_waiting_periods]
             print '.'
           end
           run = fetch_run_status run
