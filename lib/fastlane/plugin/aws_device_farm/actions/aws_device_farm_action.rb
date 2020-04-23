@@ -1,4 +1,5 @@
 require 'aws-sdk'
+
 module Fastlane
   module Actions
     # rubocop:disable Metrics/ClassLength
@@ -69,6 +70,8 @@ module Fastlane
         if params[:wait_for_completion]
           UI.message 'Waiting for the run to complete. ☕️'
           run = wait_for_run project, run, params
+          run = create_test_result run, params
+
           if params[:allow_failed_tests] == false
             if params[:allow_device_errors] == true
               raise "#{run.message} Failed 🙈" unless %w[PASSED WARNED ERRORED].include? run.result
@@ -291,6 +294,22 @@ module Fastlane
             is_string: false,
             optional: true,
             default_value: true
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :junit_xml_output_path,
+            env_name: 'FL_JUNIT_XML_OUTPUT_PATH',
+            description: 'JUnit xml output path',
+            is_string: true,
+            optional: true,
+            default_value: "junit.xml"
+          ),
+          FastlaneCore::ConfigItem.new(
+            key: :junit_xml,
+            env_name: 'FL_ALLOW_JUNIT_XML',
+            description: 'Do you create JUnit.xml?',
+            is_string: false,
+            optional: true,
+            default_value: false
           )
         ]
       end
@@ -417,11 +436,16 @@ module Fastlane
         UI.verbose "PROJECT ARN: #{project.arn}."
         ENV["AWS_DEVICE_FARM_PROJECT_ARN"] = project.arn
 
+        run
+      end
+
+      def self.create_test_result(run, params)
         job = @client.list_jobs({
-            arn: run.arn
-        })
+                arn: run.arn
+              })
 
         rows = []
+        test_results = {}
         job.jobs.each do |j|
           if j.result == "PASSED"
             status = "💚 (#{j.result})"
@@ -431,7 +455,48 @@ module Fastlane
             status = "💥 (#{j.result})"
           end
           rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
+
+          suite = @client.list_suites({
+                    arn: j.arn
+                  })
+
+          test_suites = []
+          suite.suites.each do |suite|
+            test = @client.list_tests({
+                     arn: suite.arn
+                   })
+
+            test_lists = []
+            test.tests.each do |test|
+              test_lists << {
+                "class_name" => suite.name,
+                "name"       => test.name,
+                "time"       => test.device_minutes.metered
+              }
+            end
+
+            test_suites << {
+              "name"     => suite.name,
+              "tests"    => suite.counters.total,
+              "failures" => suite.counters.failed,
+              "errors"   => suite.counters.errored,
+              "time"     => suite.device_minutes.metered,
+              "test_lists" => test_lists
+            }
+
+            # test results
+            test_results = {
+              "name"     => j.name,
+              "tests"    => j.counters.total,
+              "failures" => j.counters.failed,
+              "errors"   => j.counters.errored,
+              "time"     => j.device_minutes.metered,
+              "test_suites" => test_suites
+            }
+            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: params[:junit_xml_output_path]) if params[:junit_xml]
+          end
         end
+
         puts ""
         puts Terminal::Table.new(
           title: "Device Farm Summary".green,
@@ -442,6 +507,7 @@ module Fastlane
 
         run
       end
+
       def self.get_run_url_from_arn(arn)
         project_id = get_project_id_from_arn arn
         run_id = get_run_id_from_arn arn
