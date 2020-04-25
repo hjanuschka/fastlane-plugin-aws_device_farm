@@ -493,7 +493,10 @@ module Fastlane
               "time"     => j.device_minutes.metered,
               "test_suites" => test_suites
             }
-            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: params[:junit_xml_output_path]) if params[:junit_xml]
+
+            # need multi device support
+            file_path = "#{params[:junit_xml_output_path]}-#{j.name}-#{j.device.os}"
+            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: file_path) if params[:junit_xml]
           end
         end
 
