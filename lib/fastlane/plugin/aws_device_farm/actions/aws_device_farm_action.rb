@@ -310,6 +310,37 @@ module Fastlane
             is_string: false,
             optional: true,
             default_value: false
+          ),
+          FastlaneCore::ConfigItem.new(
+              key: :artifact,
+              env_name: 'FL_ALLOW_ARTIFACT',
+              description: 'Do you download Artifact?',
+              is_string: false,
+              optional: true,
+              default_value: false
+          ),
+          FastlaneCore::ConfigItem.new(
+              key: :artifact_output_dir,
+              env_name: 'FL_ARTIFACT_OUTPUT_DIR',
+              description: 'Artifact output directory',
+              is_string: true,
+              optional: true,
+              default_value: "./test_outputs"
+          ),
+          FastlaneCore::ConfigItem.new(
+              key: :artifact_types,
+              env_name: 'FL_ARTIFACT_TYPES',
+              description: 'Download Artifact types',
+              is_string: false,
+              type: Array,
+              optional: true,
+              default_value: [],
+              verify_block: proc do |value|
+                valid_values = ['FILE',
+                                'LOG',
+                                'SCREENSHOT']
+                raise "Artifact type concludes invalid values are: '#{(value - valid_values)}'. 🙈".red unless (value - valid_values).empty?
+              end
           )
         ]
       end
@@ -455,6 +486,31 @@ module Fastlane
             status = "💥 (#{j.result})"
           end
           rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
+
+          # artifact
+          artifact_list = %w(LOG SCREENSHOT FILE)
+          params[:artifact_types].each do |type|
+            next unless artifact_list.include?(type)
+
+            artifact = @client.list_artifacts({
+                                                  arn: j.arn,
+                                                  type: type
+                                              })
+
+            artifact.artifacts.each do |artifact|
+              case type
+              when "LOG"
+                file_name = "log-#{artifact.name}.txt"
+              when "SCREENSHOT"
+                file_name = "screenshot-#{artifact.name}.png"
+              when "FILE"
+                file_name = "file-#{artifact.name}.txt"
+              end
+
+              file_dir_path = "#{params[:artifact_output_dir]}/#{j.name}/#{j.device.os}"
+              Helper::AwsDeviceFarmHelper.get_artifact(url: artifact.url, file_dir_path: file_dir_path, file_name: file_name)
+            end
+          end
 
           suite = @client.list_suites({
                     arn: j.arn
