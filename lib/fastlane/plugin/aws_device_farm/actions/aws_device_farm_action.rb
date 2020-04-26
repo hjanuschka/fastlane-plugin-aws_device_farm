@@ -495,8 +495,8 @@ module Fastlane
             }
 
             # need multi device support
-            file_path = "#{params[:junit_xml_output_path]}-#{j.name}-#{j.device.os}"
-            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: file_path) if params[:junit_xml]
+            file_prefix = "#{j.name}-#{j.device.os}"
+            Helper::AwsDeviceFarmHelper.create_junit_xml(test_results: test_results, file_path: file_path, file_prefix: file_prefix) if params[:junit_xml]
           end
         end
 
