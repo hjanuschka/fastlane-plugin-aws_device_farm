@@ -488,9 +488,9 @@ module Fastlane
           rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
 
           # artifact
-          artifact_list = %w(LOG SCREENSHOT FILE)
+          artifact_support_types = %w(LOG SCREENSHOT FILE)
           params[:artifact_types].each do |type|
-            next unless artifact_list.include?(type)
+            next unless artifact_support_types.include?(type) && params[:artifact]
 
             artifact = @client.list_artifacts({
                                                   arn: j.arn,
