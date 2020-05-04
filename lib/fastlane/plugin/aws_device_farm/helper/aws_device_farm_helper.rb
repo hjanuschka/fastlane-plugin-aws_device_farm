@@ -1,5 +1,6 @@
 require 'rexml/document'
 require 'fileutils'
+require 'open-uri'
 
 module Fastlane
   module Helper
@@ -46,6 +47,17 @@ module Fastlane
         end
       end
 
+      # get Artifact
+      def self.get_artifact(url:, file_dir_path:, file_name:)
+        file_path = "#{file_dir_path}/#{file_name}"
+        FileUtils.mkdir_p(File.dirname(file_path))
+
+        open(url) do |file|
+          open(file_path, "w+b") do |out|
+            out.write(file.read)
+          end
+        end
+      end
     end
   end
 end
