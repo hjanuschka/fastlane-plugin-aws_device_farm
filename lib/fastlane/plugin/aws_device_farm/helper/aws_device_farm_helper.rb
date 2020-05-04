@@ -6,7 +6,7 @@ module Fastlane
     class AwsDeviceFarmHelper
 
       # create Junit.xml
-      def self.create_junit_xml(test_results:, file_path:)
+      def self.create_junit_xml(test_results:, file_path:, file_prefix:)
         doc = REXML::Document.new
         doc << REXML::XMLDecl.new('1.0', 'UTF-8')
 
@@ -37,8 +37,11 @@ module Fastlane
         end
 
         # output
-        FileUtils.mkdir_p(File.dirname(file_path))
-        File.open(file_path, 'w') do |file|
+        file_name = "#{file_prefix}-#{File.basename(file_path)}"
+        file_dir_path = File.dirname(file_path)
+
+        FileUtils.mkdir_p(file_dir_path)
+        File.open("#{file_dir_path}/#{file_name}", 'w') do |file|
           doc.write(file, indent=2)
         end
       end
