@@ -61,13 +61,6 @@ module Fastlane
 #           end
 
           # Upload the test binary.
-          UI.message 'Uploading the test binary. ☕️'
-          upload test_upload, test_path
-
-          # Wait for test upload to finish.
-          UI.message 'Waiting for the test upload to succeed. ☕️'
-          test_upload = wait_for_upload test_upload
-          raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
 #         end
 
         # Wait for upload to finish.
@@ -375,7 +368,7 @@ module Fastlane
         platform == :ios || platform == :android
       end
 
-      POLLING_INTERVAL = 25
+      POLLING_INTERVAL = 10
 
       def self.fetch_project(name)
         projects = @client.list_projects.projects
@@ -415,7 +408,7 @@ module Fastlane
           puts "inside upload.status is" + upload.status
           puts "inside upload.type is" + upload.type
           puts "inside upload.content_type is" + upload.content_type
-#           upload = fetch_upload_status upload
+          upload = fetch_upload_status upload
           puts "current upload.status is" + upload.status
           puts "current upload.type is" + upload.type
           puts "current upload.content_type is" + upload.content_type
