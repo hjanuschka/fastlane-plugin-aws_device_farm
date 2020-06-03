@@ -25,32 +25,24 @@ module Fastlane
         upload = create_project_upload project, path, type
 
         # Upload the application binary.
-        UI.message 'Uploading the application binary. ☕️'
+        UI.message 'Uploading the application binary to aws. ☕️'
         upload upload, path
 
-        # Upload the test package if needed.
-        test_upload = nil
+        # Upload the test package if needed.  
         test_path = File.expand_path(params[:test_binary_path])
-        if type == "IOS_APP"
-          if params[:test_type] == "XCTEST_UI"
-            test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
-          elsif params[:test_type] == "XCTEST"
-            test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
-            end
-        else
-          test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-        end
-
-        # Upload the test binary.
-        UI.message 'Uploading the test binary to aws. ☕'
-        upload test_upload, test_path
+        test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
         
-        sleep 25
+        
+        # Upload the test binary.
+        UI.message 'Uploading the test binary to aws. ☕️'
+        upload test_upload, test_path
+
         # Wait for test upload to finish.
-        UI.message 'Waiting for the test upload to succeed. ☕'
-#         raise 'Test upload SUCCEEDED. 🙈' 
+        UI.message 'Waiting for the test upload to succeed. ☕️'
+        test_upload = wait_for_upload test_upload
+        raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
 #         if params[:test_binary_path]
-#           test_path = File.expand_path(params[:test_binary_path])
+          
 #           if params[:test_package_type]
 #             test_upload = create_project_upload project, test_path, params[:test_package_type]
 #           else
@@ -63,22 +55,20 @@ module Fastlane
 #             end
 #           end
 
-#           # Upload the test binary.
-#           UI.message 'Uploading the test binary. ☕️'
-#           upload test_upload, test_path
+          # Upload the test binary.
+          UI.message 'Uploading the test binary. ☕️'
+          upload test_upload, test_path
 
-#           # Wait for test upload to finish.
-#           UI.message 'Waiting for the test upload to succeed. ☕️'
-#           test_upload = wait_for_upload test_upload
-#           raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+          # Wait for test upload to finish.
+          UI.message 'Waiting for the test upload to succeed. ☕️'
+          test_upload = wait_for_upload test_upload
+          raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
 #         end
 
         # Wait for upload to finish.
-        
-        sleep 30
-        
         UI.message 'Waiting for the application upload to succeed. ☕️'
-#         raise 'Binary upload SUCCEEDED. 🙈' 
+        upload = wait_for_upload upload
+        raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
@@ -380,7 +370,7 @@ module Fastlane
         platform == :ios || platform == :android
       end
 
-      POLLING_INTERVAL = 10
+      POLLING_INTERVAL = 25
 
       def self.fetch_project(name)
         projects = @client.list_projects.projects
