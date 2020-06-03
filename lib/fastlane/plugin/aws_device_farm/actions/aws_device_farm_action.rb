@@ -24,12 +24,17 @@ module Fastlane
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
         upload = create_project_upload project, path, type
 
+        puts "App binary path is" + path + "!"
+        
         # Upload the application binary.
         UI.message 'Uploading the application binary to aws. ☕️'
         upload upload, path
 
         # Upload the test package if needed.  
         test_path = File.expand_path(params[:test_binary_path])
+        puts "test path is" + test_path + "!"
+        puts "test_package_type is" + params[:test_package_type] + "!"
+        puts "test_type is" + params[:test_type] + "!"
         test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
         
         
