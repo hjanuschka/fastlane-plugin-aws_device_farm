@@ -44,8 +44,8 @@ module Fastlane
 
         # Wait for test upload to finish.
         UI.message 'Waiting for the test upload to succeed. ☕️'
-        test_upload = wait_for_upload test_upload
-        raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+#         test_upload = wait_for_upload test_upload
+#         raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
 #         if params[:test_binary_path]
           
 #           if params[:test_package_type]
@@ -65,9 +65,9 @@ module Fastlane
 
         # Wait for upload to finish.
         UI.message 'Waiting for the application upload to succeed. ☕️'
-        upload = wait_for_upload upload
-        raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
-
+#         upload = wait_for_upload upload
+#         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
+        sleep 10
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
         run_url = get_run_url_from_arn run.arn
@@ -151,7 +151,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_PACKAGE_TYPE',
             description: 'Define the type of the test binary to upload to the device farm project',
             is_string:   true,
-            optional:    true,
+            optional:    false,
             verify_block: proc do |value|
               valid_values = ['APPIUM_JAVA_JUNIT_TEST_PACKAGE',
                               'APPIUM_JAVA_TESTNG_TEST_PACKAGE',
@@ -189,7 +189,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_TYPE',
             description: 'Define the type of the test binary to upload to the device farm project',
             is_string:   true,
-            optional:    true,
+            optional:    false,
             verify_block: proc do |value|
               valid_values = ['UIAUTOMATOR',
                               'APPIUM_WEB_PYTHON',
