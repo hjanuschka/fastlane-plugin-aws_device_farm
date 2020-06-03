@@ -24,56 +24,41 @@ module Fastlane
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
         upload = create_project_upload project, path, type
 
-        puts "App binary path is" + path + "!"
-        
         # Upload the application binary.
-        UI.message 'Uploading the application binary to aws. ☕️'
+        UI.message 'Uploading the application binary. ☕️'
         upload upload, path
 
-        # Upload the test package if needed.  
-        test_path = File.expand_path(params[:test_binary_path])
-        puts "test path is" + test_path + "!"
-        puts "test_package_type is" + params[:test_package_type] + "!"
-        puts "test_type is" + params[:test_type] + "!"
-        test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
-        
-        
-        # Upload the test binary.
-        UI.message 'Uploading the test binary to aws. ☕️'
-        upload test_upload, test_path
-        
-        # sleep until the test binary uploads
-        UI.message 'sleep until the test binary uploads. ☕️'
-        sleep 15
-        
-        # Wait for test upload to finish.
-        UI.message 'Waiting for the test upload to succeed. ☕️'
-        test_upload = wait_for_upload test_upload
-        raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
-        
-        
+        # Upload the test package if needed.
+        test_upload = nil
+        if params[:test_binary_path]
+          test_path = File.expand_path(params[:test_binary_path])
+          if params[:test_package_type]
+            test_upload = create_project_upload project, test_path, params[:test_package_type]
+          else
+            if type == "ANDROID_APP"
+              test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
+            elsif params[:test_type] == 'XCTEST'
+              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
+            else
+              test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+            end
+          end
+
+          # Upload the test binary.
+          UI.message 'Uploading the test binary. ☕️'
+          puts "test_path is" + test_path
+          upload test_upload, test_path
+
+          # Wait for test upload to finish.
+          UI.message 'Waiting for the test upload to succeed. ☕️'
+          test_upload = wait_for_upload test_upload
+          raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+        end
+
         # Wait for upload to finish.
         UI.message 'Waiting for the application upload to succeed. ☕️'
         upload = wait_for_upload upload
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
-#         if params[:test_binary_path]
-          
-#           if params[:test_package_type]
-#             test_upload = create_project_upload project, test_path, params[:test_package_type]
-#           else
-#             if type == "ANDROID_APP"
-#               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-#             elsif params[:test_type] == 'XCTEST'
-#               test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
-#             else
-#               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
-#             end
-#           end
-
-          # Upload the test binary.
-#         end
-
-
 
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
@@ -148,7 +133,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_PATH',
             description: 'Define the path of the test bundle to upload to the device farm project',
             is_string:   true,
-            optional:    false,
+            optional:    true,
             verify_block: proc do |value|
               raise "Test bundle not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
@@ -158,7 +143,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_PACKAGE_TYPE',
             description: 'Define the type of the test binary to upload to the device farm project',
             is_string:   true,
-            optional:    false,
+            optional:    true,
             verify_block: proc do |value|
               valid_values = ['APPIUM_JAVA_JUNIT_TEST_PACKAGE',
                               'APPIUM_JAVA_TESTNG_TEST_PACKAGE',
@@ -196,7 +181,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_TYPE',
             description: 'Define the type of the test binary to upload to the device farm project',
             is_string:   true,
-            optional:    false,
+            optional:    true,
             verify_block: proc do |value|
               valid_values = ['UIAUTOMATOR',
                               'APPIUM_WEB_PYTHON',
@@ -407,18 +392,9 @@ module Fastlane
 
       def self.wait_for_upload(upload)
         upload = fetch_upload_status upload
-        puts "upload.status is" + upload.status
-        puts "upload.type is" + upload.type
-        puts "upload.content_type is" + upload.content_type
         while upload.status == 'PROCESSING' || upload.status == 'INITIALIZED'
-          sleep 20
-          puts "inside upload.status is" + upload.status
-          puts "inside upload.type is" + upload.type
-          puts "inside upload.content_type is" + upload.content_type
+          sleep POLLING_INTERVAL
           upload = fetch_upload_status upload
-          puts "current upload.status is" + upload.status
-          puts "current upload.type is" + upload.type
-          puts "current upload.content_type is" + upload.content_type
         end
 
         upload
@@ -432,7 +408,6 @@ module Fastlane
       end
 
       def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
-        puts "scheduled for run" 
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
         if test_upload
