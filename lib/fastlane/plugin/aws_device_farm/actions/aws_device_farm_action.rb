@@ -30,29 +30,47 @@ module Fastlane
 
         # Upload the test package if needed.
         test_upload = nil
-        if params[:test_binary_path]
-          test_path = File.expand_path(params[:test_binary_path])
-          if params[:test_package_type]
-            test_upload = create_project_upload project, test_path, params[:test_package_type]
-          else
-            if type == "ANDROID_APP"
-              test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-            elsif params[:test_type] == 'XCTEST'
-              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
-            else
-              test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+        if type == "IOS_APP"
+          if params[:test_type] == "XCTEST_UI"
+            test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+          elsif params[:test_type] == "XCTEST"
+            test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
             end
-          end
-
-          # Upload the test binary.
-          UI.message 'Uploading the test binary. ☕️'
-          upload test_upload, test_path
-
-          # Wait for test upload to finish.
-          UI.message 'Waiting for the test upload to succeed. ☕️'
-          test_upload = wait_for_upload test_upload
-          raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+        else
+          test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
         end
+
+        # Upload the test binary.
+        UI.message 'Uploading the test binary to aws. ☕'
+        upload test_upload, test_path
+
+        # Wait for test upload to finish.
+        UI.message 'Waiting for the test upload to succeed. ☕'
+        test_upload = wait_for_upload test_upload
+        raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+#         if params[:test_binary_path]
+#           test_path = File.expand_path(params[:test_binary_path])
+#           if params[:test_package_type]
+#             test_upload = create_project_upload project, test_path, params[:test_package_type]
+#           else
+#             if type == "ANDROID_APP"
+#               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
+#             elsif params[:test_type] == 'XCTEST'
+#               test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
+#             else
+#               test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+#             end
+#           end
+
+#           # Upload the test binary.
+#           UI.message 'Uploading the test binary. ☕️'
+#           upload test_upload, test_path
+
+#           # Wait for test upload to finish.
+#           UI.message 'Waiting for the test upload to succeed. ☕️'
+#           test_upload = wait_for_upload test_upload
+#           raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+#         end
 
         # Wait for upload to finish.
         UI.message 'Waiting for the application upload to succeed. ☕️'
