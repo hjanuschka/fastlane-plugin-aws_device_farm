@@ -392,9 +392,12 @@ module Fastlane
 
       def self.wait_for_upload(upload)
         upload = fetch_upload_status upload
-        while upload.status == 'PROCESSING' || upload.status == 'INITIALIZED'
+        puts "upload.status is outside" + upload.status
+        while upload.status == 'INITIALIZED' || upload.status == 'PROCESSING'
+          puts "upload.status is inside" + upload.status
           sleep POLLING_INTERVAL
           upload = fetch_upload_status upload
+          puts "upload.status is inside after" + upload.status
         end
 
         upload
