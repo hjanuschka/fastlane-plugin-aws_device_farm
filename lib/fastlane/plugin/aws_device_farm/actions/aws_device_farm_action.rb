@@ -42,6 +42,10 @@ module Fastlane
         UI.message 'Uploading the test binary to aws. ☕️'
         upload test_upload, test_path
         
+        # sleep until the test binary uploads
+        UI.message 'sleep until the test binary uploads. ☕️'
+        sleep 15
+        
         # Wait for test upload to finish.
         UI.message 'Waiting for the test upload to succeed. ☕️'
         test_upload = wait_for_upload test_upload
