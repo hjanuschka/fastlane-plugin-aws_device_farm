@@ -41,11 +41,16 @@ module Fastlane
         # Upload the test binary.
         UI.message 'Uploading the test binary to aws. ☕️'
         upload test_upload, test_path
-
+      
+        # Wait for upload to finish.
+        UI.message 'Waiting for the application upload to succeed. ☕️'
+        upload = wait_for_upload upload
+        raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
+        
         # Wait for test upload to finish.
         UI.message 'Waiting for the test upload to succeed. ☕️'
-#         test_upload = wait_for_upload test_upload
-#         raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
+        test_upload = wait_for_upload test_upload
+        raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
 #         if params[:test_binary_path]
           
 #           if params[:test_package_type]
@@ -63,11 +68,8 @@ module Fastlane
           # Upload the test binary.
 #         end
 
-        # Wait for upload to finish.
-        UI.message 'Waiting for the application upload to succeed. ☕️'
-#         upload = wait_for_upload upload
-#         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
-        sleep 10
+
+
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
         run_url = get_run_url_from_arn run.arn
