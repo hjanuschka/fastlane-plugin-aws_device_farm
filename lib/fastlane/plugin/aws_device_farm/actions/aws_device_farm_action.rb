@@ -407,9 +407,27 @@ module Fastlane
 
       def self.wait_for_upload(upload)
         upload = fetch_upload_status upload
+        puts "upload.status is" + upload.status
+        puts "upload.message is" + upload.message
+        puts "upload.type is" + upload.type
+        puts "upload.name is" + upload.name
+        puts "upload.arn is" + upload.arn 
+        puts "upload.content_type is" + upload.content_type
         while upload.status == 'PROCESSING' || upload.status == 'INITIALIZED'
           sleep POLLING_INTERVAL
+          puts "inside upload.status is" + upload.status
+          puts "inside upload.message is" + upload.message
+          puts "inside upload.type is" + upload.type
+          puts "inside upload.name is" + upload.name
+          puts "inside upload.arn is" + upload.arn 
+          puts "inside upload.content_type is" + upload.content_type
           upload = fetch_upload_status upload
+          puts "current upload.status is" + upload.status
+          puts "current upload.message is" + upload.message
+          puts "current upload.type is" + upload.type
+          puts "current upload.name is" + upload.name
+          puts "current upload.arn is" + upload.arn 
+          puts "current upload.content_type is" + upload.content_type
         end
 
         upload
