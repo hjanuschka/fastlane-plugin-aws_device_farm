@@ -148,7 +148,7 @@ module Fastlane
             env_name:    'FL_AWS_DEVICE_FARM_TEST_PATH',
             description: 'Define the path of the test bundle to upload to the device farm project',
             is_string:   true,
-            optional:    true,
+            optional:    false,
             verify_block: proc do |value|
               raise "Test bundle not found at path '#{value}'. 🙈".red unless File.exist?(File.expand_path(value))
             end
