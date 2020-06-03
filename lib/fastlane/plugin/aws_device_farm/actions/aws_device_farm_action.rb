@@ -30,6 +30,7 @@ module Fastlane
 
         # Upload the test package if needed.
         test_upload = nil
+        test_path = File.expand_path(params[:test_binary_path])
         if type == "IOS_APP"
           if params[:test_type] == "XCTEST_UI"
             test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
