@@ -48,7 +48,6 @@ module Fastlane
         sleep 20
         # Wait for test upload to finish.
         UI.message 'Waiting for the test upload to succeed. ☕'
-        test_upload = wait_for_upload test_upload
         raise 'Test upload SUCCEEDED. 🙈' 
 #         if params[:test_binary_path]
 #           test_path = File.expand_path(params[:test_binary_path])
