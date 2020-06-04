@@ -370,7 +370,7 @@ module Fastlane
         @client.create_upload({
           project_arn:  project.arn,
           name:         File.basename(path),
-#           content_type: 'application/octet-stream',
+          content_type: 'application/x-www-form-urlencoded',
           type:         type
         }).upload
       end
