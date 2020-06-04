@@ -381,7 +381,7 @@ module Fastlane
         contents = File.open(path, 'rb').read
         puts "contents are #{contents}"
         Net::HTTP.new(url.host).start do |http|
-          response = http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
+          response = http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream', 'Authorization' => 'AWS4-HMAC-SHA256' })
           puts "response is #{response}"
           pp response
         end
