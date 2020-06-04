@@ -383,6 +383,7 @@ module Fastlane
         Net::HTTP.new(url.host).start do |http|
           response = http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
           puts "response is #{response}"
+          pretty_print response
         end
       end
 
