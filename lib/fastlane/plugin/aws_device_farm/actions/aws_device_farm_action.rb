@@ -32,8 +32,7 @@ module Fastlane
         test_upload = nil
         if params[:test_binary_path]
           test_path = File.expand_path(params[:test_binary_path])
-          if params[:test_package_type]
-            test_upload = create_project_upload project, test_path, params[:test_package_type]
+          test_upload = create_project_upload project, test_path, 'IOS_APP'
           else
             if type == "ANDROID_APP"
               test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
@@ -46,7 +45,6 @@ module Fastlane
 
           # Upload the test binary.
           UI.message 'Uploading the test binary. ☕️'
-          puts "test_path is" + test_path
           upload test_upload, test_path
 
           # Wait for test upload to finish.
@@ -392,12 +390,9 @@ module Fastlane
 
       def self.wait_for_upload(upload)
         upload = fetch_upload_status upload
-        puts "upload.status is outside" + upload.status
-        while upload.status == 'INITIALIZED' || upload.status == 'PROCESSING'
-          puts "upload.status is inside" + upload.status
+        while upload.status == 'PROCESSING' || upload.status == 'INITIALIZED'
           sleep POLLING_INTERVAL
           upload = fetch_upload_status upload
-          puts "upload.status is inside after" + upload.status
         end
 
         upload
