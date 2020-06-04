@@ -370,7 +370,7 @@ module Fastlane
         @client.create_upload({
           project_arn:  project.arn,
           name:         File.basename(path),
-          content_type: 'application/octet-stream',
+#           content_type: 'application/octet-stream',
           type:         type
         }).upload
       end
@@ -381,7 +381,7 @@ module Fastlane
         contents = File.open(path, 'rb').read
         puts "contents are #{contents}"
         Net::HTTP.new(url.host).start do |http|
-          response = http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/x-www-form-urlencoded' })
+          response = http.send_request("PUT", url.request_uri, contents, { 'Content-Type' => 'application/x-www-form-urlencoded' })
           puts "response is #{response}"
           pp response
         end
