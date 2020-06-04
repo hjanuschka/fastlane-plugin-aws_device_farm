@@ -33,15 +33,6 @@ module Fastlane
         if params[:test_binary_path]
           test_path = File.expand_path(params[:test_binary_path])
           test_upload = create_project_upload project, test_path, 'IOS_APP'
-          else
-            if type == "ANDROID_APP"
-              test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
-            elsif params[:test_type] == 'XCTEST'
-              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
-            else
-              test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
-            end
-          end
 
           # Upload the test binary.
           UI.message 'Uploading the test binary. ☕️'
