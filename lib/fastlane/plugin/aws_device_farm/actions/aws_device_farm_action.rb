@@ -32,7 +32,17 @@ module Fastlane
         test_upload = nil
         if params[:test_binary_path]
           test_path = File.expand_path(params[:test_binary_path])
-          test_upload = create_project_upload project, test_path, 'IOS_APP'
+          if params[:test_package_type]
+            test_upload = create_project_upload project, test_path, params[:test_package_type]
+          else
+            if type == "ANDROID_APP"
+              test_upload = create_project_upload project, test_path, 'INSTRUMENTATION_TEST_PACKAGE'
+            elsif params[:test_type] == 'XCTEST'
+              test_upload = create_project_upload project, test_path, 'XCTEST_TEST_PACKAGE'
+            else
+              test_upload = create_project_upload project, test_path, 'XCTEST_UI_TEST_PACKAGE'
+            end
+          end
 
           # Upload the test binary.
           UI.message 'Uploading the test binary. ☕️'
@@ -369,9 +379,10 @@ module Fastlane
         url = URI.parse(upload.url)
         puts "url is #{url}"
         contents = File.open(path, 'rb').read
-        puts "contents are #{contents}"
+        puts "url is #{contents}"
         Net::HTTP.new(url.host).start do |http|
-          http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
+          response = http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
+          puts "response is #{response}"
         end
       end
 
