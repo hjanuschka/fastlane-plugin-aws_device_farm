@@ -367,7 +367,9 @@ module Fastlane
 
       def self.upload(upload, path)
         url = URI.parse(upload.url)
+        puts "url is #{url}"
         contents = File.open(path, 'rb').read
+        puts "contents are #{contents}"
         Net::HTTP.new(url.host).start do |http|
           http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
         end
