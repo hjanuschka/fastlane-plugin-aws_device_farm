@@ -61,6 +61,8 @@ module Fastlane
 
         # Schedule the run.
         run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        puts "project name is" + project
+        puts "device_pool is" + device_pool
         run_url = get_run_url_from_arn run.arn
         ENV["AWS_DEVICE_FARM_WEB_URL_OF_RUN"] = run_url
         UI.message "The Device Farm console URL for the run: #{run_url}" if params[:print_web_url_of_run] == true
@@ -370,7 +372,7 @@ module Fastlane
         @client.create_upload({
           project_arn:  project.arn,
           name:         File.basename(path),
-          content_type: 'application/x-www-form-urlencoded',
+          content_type: 'application/octet-stream',
           type:         type
         }).upload
       end
@@ -379,11 +381,8 @@ module Fastlane
         url = URI.parse(upload.url)
         puts "url is #{url}"
         contents = File.open(path, 'rb').read
-        puts "contents are #{contents}"
         Net::HTTP.new(url.host).start do |http|
-          response = http.send_request("PUT", url.request_uri, contents, { 'Content-Type' => 'application/x-www-form-urlencoded' })
-          puts "response is #{response}"
-          pp response
+          http.send_request("PUT", url.request_uri, contents, { 'Content-Type' => 'application/x-www-form-urlencoded' })
         end
       end
 
