@@ -51,6 +51,7 @@ module Fastlane
           # Wait for test upload to finish.
           UI.message 'Waiting for the test upload to succeed. ☕️'
           test_upload = wait_for_upload test_upload
+          puts "metadata is" + test_upload.metadata
           raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
         end
 
@@ -379,7 +380,6 @@ module Fastlane
         contents = File.open(path, 'rb').read
         Net::HTTP.new(url.host).start do |http|
           http.send_request("PUT", url.request_uri, contents, { 'content-type' => 'application/octet-stream' })
-          puts "metadata is" + upload.metadata
         end
       end
 
