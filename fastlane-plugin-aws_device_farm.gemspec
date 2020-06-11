@@ -17,7 +17,9 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'aws-sdk', '>= 3.99.0'
+  spec.add_dependency('aws-sdk-devicefarm', '~> 1')
+  spec.add_dependency('aws-sdk-s3', '~> 1')
+  spec.add_dependency('aws-sdk-s3control', '~> 1')
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'fastlane', '>= 1.105.0'
