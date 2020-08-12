@@ -422,6 +422,7 @@ module Fastlane
 
           if params[:test_spec]
               test_hash[:test_spec_arn] = params[:test_spec]
+              test_hash[:filter] = params[:filter]
           else
               test_hash[:filter] = params[:filter]
           end
