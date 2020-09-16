@@ -234,7 +234,7 @@ module Fastlane
             description: 'Define the network profile you want to use for running the applications',
             default_value: '3G Lossy',
             is_string:   true,
-            optional:    true
+            optional:    false
           ),         
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
