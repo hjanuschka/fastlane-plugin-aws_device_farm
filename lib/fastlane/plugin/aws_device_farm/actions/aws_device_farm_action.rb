@@ -19,6 +19,10 @@ module Fastlane
         device_pool = fetch_device_pool project, params[:device_pool]
         raise "Device pool '#{params[:device_pool]}' not found. 🙈" if device_pool.nil?
 
+         # Fetch the network profile.
+        network_profile = fetch_network_profile project, params[:network_profile]
+        raise "Network_profile '#{params[:network_profile]}' not found. 🙈" if network_profile.nil?
+        
         # Create the upload.
         path   = File.expand_path(params[:binary_path])
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
@@ -60,7 +64,7 @@ module Fastlane
         raise 'Binary upload failed. 🙈' unless upload.status == 'SUCCEEDED'
 
         # Schedule the run.
-        run = schedule_run params[:run_name], project, device_pool, upload, test_upload, type, params
+        run = schedule_run params[:run_name], project, device_pool, network_profile, upload, test_upload, type, params
         run_url = get_run_url_from_arn run.arn
         ENV["AWS_DEVICE_FARM_WEB_URL_OF_RUN"] = run_url
         UI.message "The Device Farm console URL for the run: #{run_url}" if params[:print_web_url_of_run] == true
@@ -224,6 +228,14 @@ module Fastlane
             is_string:   true,
             optional:    false
           ),
+          FastlaneCore::ConfigItem.new(
+            key:         :network_profile,
+            env_name:    'FL_AWS_DEVICE_FARM_NETWORK_PROFILE',
+            description: 'Define the network profile you want to use for running the applications',
+            default_value: '3G Lossy',
+            is_string:   true,
+            optional:    true
+          ),         
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
             env_name:      'FL_AWS_DEVICE_FARM_WAIT_FOR_COMPLETION',
@@ -406,7 +418,14 @@ module Fastlane
         device_pools.device_pools.detect { |p| p.name == device_pool }
       end
 
-      def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
+      def self.fetch_network_profile(project, network_profile)
+        network_profiles = @client.list_network_profiles({
+          arn: project.arn
+        })
+        network_profiles.network_profiles.detect { |p| p.name == network_profile }
+      end
+      
+      def self.schedule_run(name, project, device_pool, network_profile, upload, test_upload, type, params)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
         if test_upload
@@ -439,6 +458,7 @@ module Fastlane
           project_arn:     project.arn,
           app_arn:         upload.arn,
           device_pool_arn: device_pool.arn,
+          network_profile_arn: network_profile.arn,
           test:            test_hash,
           configuration:   configuration_hash
         }).run
