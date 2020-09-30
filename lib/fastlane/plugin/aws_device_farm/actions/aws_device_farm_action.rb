@@ -18,7 +18,6 @@ module Fastlane
         # Fetch the device pool.
         device_pool = fetch_device_pool project, params[:device_pool]
         raise "Device pool '#{params[:device_pool]}' not found. 🙈" if device_pool.nil?
-        
         # Create the upload.
         path   = File.expand_path(params[:binary_path])
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
@@ -413,7 +412,6 @@ module Fastlane
         })
         device_pools.device_pools.detect { |p| p.name == device_pool }
       end
-      
       def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
