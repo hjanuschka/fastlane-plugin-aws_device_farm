@@ -85,6 +85,12 @@ module Fastlane
 
         run
       end
+      
+      # Get the network profile from params if value is provided
+      if params[:network_profile_arn]
+        configuration[:network_profile_arn] = params[:network_profile_arn]
+      end
+      
       # rubocop:enable  Metrics/BlockNesting
       #
       #####################################################
@@ -227,9 +233,8 @@ module Fastlane
             key:         :network_profile_arn,
             env_name:    'FL_AWS_DEVICE_FARM_NETWORK_PROFILE_ARN',
             description: 'Network profile arn you want to use for running the applications',
-            default_value: 'arn:aws:devicefarm:us-west-2::networkprofile:public4',
             is_string:   true,
-            optional:    false
+            optional:    true
           ),         
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
