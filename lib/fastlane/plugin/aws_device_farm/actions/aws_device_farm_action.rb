@@ -18,7 +18,6 @@ module Fastlane
         # Fetch the device pool.
         device_pool = fetch_device_pool project, params[:device_pool]
         raise "Device pool '#{params[:device_pool]}' not found. 🙈" if device_pool.nil?
-
         # Create the upload.
         path   = File.expand_path(params[:binary_path])
         type   = File.extname(path) == '.apk' ? 'ANDROID_APP' : 'IOS_APP'
@@ -86,6 +85,12 @@ module Fastlane
 
         run
       end
+      
+      # Get the network profile from params if value is provided
+      if params[:network_profile_arn]
+        configuration[:network_profile_arn] = params[:network_profile_arn]
+      end
+      
       # rubocop:enable  Metrics/BlockNesting
       #
       #####################################################
@@ -224,6 +229,15 @@ module Fastlane
             is_string:   true,
             optional:    false
           ),
+          FastlaneCore::ConfigItem.new(
+            key:         :network_profile_arn,
+            env_name:    'FL_AWS_DEVICE_FARM_NETWORK_PROFILE_ARN',
+            description: 'Network profile arn you want to use for running the applications',
+            default_value: nil,
+            optional:    false
+            is_string:   true,
+            optional:    false
+          ),         
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
             env_name:      'FL_AWS_DEVICE_FARM_WAIT_FOR_COMPLETION',
@@ -405,7 +419,6 @@ module Fastlane
         })
         device_pools.device_pools.detect { |p| p.name == device_pool }
       end
-
       def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
@@ -431,7 +444,8 @@ module Fastlane
 
         configuration_hash = {
           billing_method: params[:billing_method],
-          locale: params[:locale]
+          locale: params[:locale],
+          network_profile_arn: params[:network_profile_arn]
         }
 
         @client.schedule_run({
