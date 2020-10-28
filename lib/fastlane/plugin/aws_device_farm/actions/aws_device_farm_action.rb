@@ -235,8 +235,7 @@ module Fastlane
             description: 'Network profile arn you want to use for running the applications',
             default_value: nil,
             optional:    false,
-            is_string:   true,
-            optional:    false
+            is_string:   true
           ),         
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
