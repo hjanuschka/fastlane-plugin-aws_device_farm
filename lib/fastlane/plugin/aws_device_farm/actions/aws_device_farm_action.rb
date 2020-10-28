@@ -85,12 +85,9 @@ module Fastlane
 
         run
       end
-      
-      # Get the network profile from params if value is provided
-      if params[:network_profile_arn]
-        configuration[:network_profile_arn] = params[:network_profile_arn]
-      end
-      
+
+
+
       # rubocop:enable  Metrics/BlockNesting
       #
       #####################################################
@@ -236,7 +233,7 @@ module Fastlane
             default_value: nil,
             optional:    false,
             is_string:   true
-          ),         
+          ),
           FastlaneCore::ConfigItem.new(
             key:           :wait_for_completion,
             env_name:      'FL_AWS_DEVICE_FARM_WAIT_FOR_COMPLETION',
@@ -444,8 +441,12 @@ module Fastlane
         configuration_hash = {
           billing_method: params[:billing_method],
           locale: params[:locale],
-          network_profile_arn: params[:network_profile_arn]
         }
+
+        # Get the network profile from params if value is provided
+      if params[:network_profile_arn]
+        configuration_hash[:network_profile_arn] = params[:network_profile_arn]
+      end
 
         @client.schedule_run({
           name:            name,
@@ -456,6 +457,7 @@ module Fastlane
           configuration:   configuration_hash
         }).run
       end
+
 
       def self.fetch_run_status(run)
         @client.get_run({
