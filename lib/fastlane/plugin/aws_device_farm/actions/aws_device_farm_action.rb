@@ -473,7 +473,7 @@ module Fastlane
           end
           run = fetch_run_status run
         end
-        UI.message "The run ended with result #{run.result}."
+        UI.message "The run ended with result #{run}."
         UI.important "Minutes Counted: #{run.device_minutes.total}"
 
         UI.verbose "RUN ARN: #{run.arn}."
