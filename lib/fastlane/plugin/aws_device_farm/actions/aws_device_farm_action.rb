@@ -50,6 +50,7 @@ module Fastlane
           # Wait for test upload to finish.
           UI.message 'Waiting for the test upload to succeed. ☕️'
           test_upload = wait_for_upload test_upload
+          puts "metadata is" + test_upload.metadata
           raise 'Test upload failed. 🙈' unless test_upload.status == 'SUCCEEDED'
         end
 
@@ -380,7 +381,6 @@ module Fastlane
         @client.create_upload({
           project_arn:  project.arn,
           name:         File.basename(path),
-          content_type: 'application/octet-stream',
           type:         type
         }).upload
       end
@@ -431,6 +431,7 @@ module Fastlane
 
           if params[:test_spec]
               test_hash[:test_spec_arn] = params[:test_spec]
+              test_hash[:filter] = params[:filter]
           else
               test_hash[:filter] = params[:filter]
           end
