@@ -230,8 +230,7 @@ module Fastlane
             key:         :network_profile_arn,
             env_name:    'FL_AWS_DEVICE_FARM_NETWORK_PROFILE_ARN',
             description: 'Network profile arn you want to use for running the applications',
-            default_value: nil,
-            optional:    false,
+            optional:    true,
             is_string:   true
           ),
           FastlaneCore::ConfigItem.new(
