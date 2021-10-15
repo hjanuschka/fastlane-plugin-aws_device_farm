@@ -349,7 +349,13 @@ module Fastlane
                                 'SCREENSHOT']
                 raise "Artifact type concludes invalid values are: '#{(value - valid_values)}'. 🙈".red unless (value - valid_values).empty?
               end
-          )
+          ),
+          FastlaneCore::ConfigItem.new(
+            key:         :additional_configuration,
+            description: 'Additional configuration settings',
+            type:        Hash,
+            optional:    true,
+          ),
         ]
       end
 
@@ -443,9 +449,14 @@ module Fastlane
         }
 
         # Get the network profile from params if value is provided
-      if params[:network_profile_arn]
-        configuration_hash[:network_profile_arn] = params[:network_profile_arn]
-      end
+        if params[:network_profile_arn]
+          configuration_hash[:network_profile_arn] = params[:network_profile_arn]
+        end
+
+        # Add additional configuration arguments if provided.
+        if params[:additional_configuration]
+          configuration_hash.update(params[:additional_configuration])
+        end
 
         @client.schedule_run({
           name:            name,
