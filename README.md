@@ -84,21 +84,32 @@ The plugin also exposes two ENV variables in case you want to make additional ca
 
  * **aws_device_farm**
 
-|  Option |  Default  |  Description |  Type |
-|---|---|---|---|
-|  name |  fastlane  |  AWS Device Farm Project Name |  String |
-|  binary_path |    |  Path to App Binary |  String |
-|  test_binary_path |    |  Path to test bundle |  String |
-|  test_package_type |    |  Type of test package |  String |
-|  test_type |    |  Type of test |  String |
-|  device_pool | IOS | AWS Device Farm Device Pool | String |
-|  wait_for_completion | true | Wait for Test-Run to be completed | Boolean |
-|  allow_device_errors | false | Do you want to allow device booting errors? | Boolean |
-|  allow_failed_tests | false | Do you want to allow failing tests? | Boolean |
-|  test_spec |    | Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command) | String |
+|  Option |  Default  |  Description |  Type | Required |
+|---|---|---|---|---|
+|  name |  `fastlane`  |  AWS Device Farm Project Name |  String | :white_check_mark: |
+|  run_name |    | Define the name of the device farm run | String |  |
+|  binary_path |    |  Path to App Binary |  String | :white_check_mark: |
+|  test_binary_path |    |  Path to test bundle |  String |  |
+|  test_package_type |    |  Type of test package |  String |  |
+|  test_type |    |  Type of test |  String |  |
+|  path |    | Define the path of the application binary (apk or ipa) to upload to the device farm project | String | :white_check_mark: |
+|  device_pool | `IOS` | AWS Device Farm Device Pool | String | :white_check_mark: |
+|  network_profile_arn |    | Network profile arn you want to use for running the applications | String |  |
+|  wait_for_completion | `true` | Wait for Test-Run to be completed | Boolean |  |
+|  allow_device_errors | `false` | Do you want to allow device booting errors? | Boolean |  |
+|  allow_failed_tests | `false` | Do you want to allow failing tests? | Boolean |  |
 |  filter |    | Define a filter for your test run and only run the tests in the filter (note that using `test_spec` overrides the `filter` option) | String |
-|  print_web_url_of_run  | false | Do you want to print the web url of run in the messages? | Boolean |
-|  print_waiting_periods | true | Do you want to print `.` while waiting for a run? | Boolean
+|  billing_method | `METERED` | Specify the billing method for the run | String |  |
+|  locale | `en_US` | Specify the locale for the run | String |  |
+|  test_spec |    | Define the device farm custom TestSpec ARN to use (can be obtained using the AWS CLI `devicefarm list-uploads` command) | String |
+|  print_web_url_of_run  | `false` | Do you want to print the web url of run in the messages? | Boolean |  |
+|  print_waiting_periods | `true` | Do you want to print `.` while waiting for a run? | Boolean |  |
+|  junit_xml_output_path | `junit.xml` | JUnit xml output path | String |  |
+|  junit_xml | `false` | Do you want to create JUnit.xml? | Boolean |  |
+|  artifact | `false` | Do you want to download Artifact? | Boolean |  |
+|  artifact_output_dir | `./test_outputs` | Artifact output directory | String |  |
+|  artifact_types | `[]` | Specify the artifact types one wants to download | Array |  |
+
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
 
