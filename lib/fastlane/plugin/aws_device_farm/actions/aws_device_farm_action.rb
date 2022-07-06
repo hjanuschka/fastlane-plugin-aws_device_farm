@@ -356,6 +356,12 @@ module Fastlane
             type:        Hash,
             optional:    true,
           ),
+          FastlaneCore::ConfigItem.new(
+            key:         :test_parameters,
+            description: 'The test parameters',
+            type:        Hash,
+            optional:    true,
+          ),
         ]
       end
 
@@ -423,6 +429,11 @@ module Fastlane
       def self.schedule_run(name, project, device_pool, upload, test_upload, type, params)
         # Prepare the test hash depening if you passed the test apk.
         test_hash = { type: 'BUILTIN_FUZZ' }
+
+        if params[:test_parameters]
+          test_hash[:parameters] = params[:test_parameters]
+        end
+
         if test_upload
           if params[:test_type]
             test_hash[:type] = params[:test_type]
