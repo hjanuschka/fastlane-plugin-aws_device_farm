@@ -109,6 +109,7 @@ The plugin also exposes two ENV variables in case you want to make additional ca
 |  artifact | `false` | Do you want to download Artifact? | Boolean |  |
 |  artifact_output_dir | `./test_outputs` | Artifact output directory | String |  |
 |  artifact_types | `[]` | Specify the artifact types one wants to download | Array |  |
+|  test_parameters |    |The test's parameters, such as test framework parameters and fixture settings. Parameters are represented by name-value pairs of strings. | Hash |  |
 
 
 Possible types see: http://docs.aws.amazon.com/sdkforruby/api/Aws/DeviceFarm/Client.html#create_upload-instance_method
