@@ -530,7 +530,7 @@ module Fastlane
 
             artifact = @client.list_artifacts({
                          arn: j.arn,
-                         type: type
+                         type: ['LOG', 'SCREENSHOT'].include?(type) ? type : 'FILE'
                        })
 
             artifact.artifacts.each do |artifact|
