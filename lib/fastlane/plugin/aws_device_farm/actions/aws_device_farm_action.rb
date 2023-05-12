@@ -347,7 +347,7 @@ module Fastlane
               verify_block: proc do |value|
                 valid_values = ['LOG',
                                 'SCREENSHOT', 
-                                'CUSTOMER_ARTIFACT']
+                                'FILE']
                 raise "Artifact type concludes invalid values are: '#{(value - valid_values)}'. 🙈".red unless (value - valid_values).empty?
               end
           ),
@@ -524,13 +524,13 @@ module Fastlane
           rows << [status, j.name, j.device.form_factor, j.device.platform, j.device.os]
 
           # artifact
-          artifact_support_types = %w(LOG SCREENSHOT CUSTOMER_ARTIFACT)
+          artifact_support_types = %w(LOG SCREENSHOT FILE)
           params[:artifact_types].each do |type|
             next unless artifact_support_types.include?(type) && params[:artifact]
 
             artifact = @client.list_artifacts({
                          arn: j.arn,
-                         type: ['LOG', 'SCREENSHOT'].include?(type) ? type : 'FILE'
+                         type: type
                        })
 
             artifact.artifacts.each do |artifact|
@@ -539,7 +539,7 @@ module Fastlane
                 file_name = "#{artifact.name}.#{artifact.extension}"
               when "SCREENSHOT"
                 file_name = "#{artifact.name}.#{artifact.extension}"
-              when "CUSTOMER_ARTIFACT"
+              when "FILE"
                 file_name = "#{artifact.name}.#{artifact.extension}"
               end
 
