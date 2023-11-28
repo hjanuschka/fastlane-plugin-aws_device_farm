@@ -1,4 +1,4 @@
-require 'aws-sdk'
+require 'aws-sdk-devicefarm'
 
 module Fastlane
   module Actions
